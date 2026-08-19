@@ -92,10 +92,18 @@ write .env
 
 The current deterministic device identity is:
 
+The provisioner uses a deterministic Jio secondary-device MAC derived
+from the configured hostname.
+
 ``` text
 Hostname: ParikaSIPProxy
 MAC: 00:00:26:21:44:37
 ```
+
+This is NOT the laptop's physical network MAC address. Do not replace
+it with the MAC shown by `ip link`.
+
+
 
 Do not manually change the MAC unless the provisioning identity is
 intentionally being changed.
