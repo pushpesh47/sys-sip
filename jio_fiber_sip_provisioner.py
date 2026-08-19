@@ -188,15 +188,21 @@ def ims_request(base: str, hostname: str, mac: str, operation: str, no_otp: bool
 def remove_device(base: str, hostname: str, mac: str) -> RawResponse:
     print(f"Removing authorized device '{hostname}' with MAC {mac}...")
     response = ims_request(base, hostname, mac, operation="remove")
-    if response.status_code != 200:
-        print(f"Device removal failed: HTTP {response.status_code}")
-        if response.text:
-            print(response.text)
-        sys.exit(5)
 
-    print("Device removal response:")
-    print(response.text)
-    return response
+    if response.status_code == 200:
+        print("Device removal response:")
+        print(response.text)
+        return response
+
+    if response.status_code == 503 and response.text.strip() == "Retry After":
+        print(f"SIP account is not currently added for device '{hostname}'.")
+        print("Nothing to remove. Run the provisioner without --remove to add it.")
+        return response
+
+    print(f"Device removal failed: HTTP {response.status_code}")
+    if response.text:
+        print(response.text)
+    sys.exit(5)
 
 
 def otp_verify(base: str, otp: int, session: requests.Session):
@@ -302,6 +308,14 @@ def main():
     sess = requests.Session()
     sess.verify = False
     add_resp = ims_request(host, HARD_HOSTNAME, mac, operation="add", session=sess)
+    content_type = add_resp.headers.get("content-type", "").lower()
+
+    if add_resp.status_code == 200 and "application/xml" in content_type:
+        print(f"SIP account is already added for device '{HARD_HOSTNAME}'.")
+        print("Please remove it first:")
+        print("  python3 jio_fiber_sip_provisioner.py --remove")
+        return
+
     if add_resp.status_code != 200:
         print(f"Registration request failed: HTTP {add_resp.status_code}\n{add_resp.text}")
         fail_prereq()
