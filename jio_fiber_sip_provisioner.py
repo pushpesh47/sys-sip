@@ -224,8 +224,19 @@ def parse_sip_values(root: ET.Element) -> dict:
         "userpwd",
         "home_network_domain_name",
         "address",
+        "addresstype",
         "private_user_identity",
         "public_user_identity",
+        "uuid_value",
+        "pnparam",
+        "psoltid",
+        "token",
+        "version",
+        "pssignalling",
+        "psrtmedia",
+        "wifisignalling",
+        "wifirtmedia",
+        "q-value",
     }
     out: dict = {}
     for p in root.findall(".//parm"):
@@ -382,6 +393,7 @@ def main():
     env_values = {
         "CONTAINER_NAME": "jfc-pjsua",
         "HOSTNAME_OVERRIDE": HARD_HOSTNAME,
+        "DEVICE_MAC": mac,
         "USER_AGENT": "ParikaProxy/1.0",
         # Local bind/public IP for Contact shaping
         "IPV4_ADDRESS": local_ip,
@@ -389,23 +401,43 @@ def main():
         "TLS_PORT": "5068",
         "RTP_PORT": "52000",
         # SIP/IMS identities
-        "PUBLIC_ID": f"sip:+91{msisdn}@{realm}",
-        "SIP_AUTH_USER": msisdn,
+        "PUBLIC_ID": sip.get("public_user_identity") or f"sip:+91{msisdn}@{realm}",
+        "SIP_AUTH_USER": username,
         "SIP_PASSWORD": userpwd,
         "SIP_REALM": realm,
-        # Upstream proxy/registrar are the router on TLS 5068
+        "SIP_HOME_NETWORK_DOMAIN": sip.get("home_network_domain_name", ""),
+        "SIP_ADDRESS": sip.get("address", ""),
+        "SIP_PRIVATE_USER_IDENTITY": sip.get("private_user_identity", ""),
+        "SIP_PUBLIC_USER_IDENTITY": sip.get("public_user_identity", ""),
+        # SIP registration/device identity from Jio provisioning
+        "SIP_INSTANCE": sip.get("uuid_value", ""),
+        "SIP_REG_ID": "1",
+        "SIP_CONTACT_VIDEO": "true",
+        "SIP_Q_VALUE": "0.5",
+        "P_ACCESS_NETWORK_INFO": "GPON;PSAPId=" + sip.get("psoltid", ""),
+        # IMS service parameters
+        "SIP_ICSI_REF": "urn:urn-7:3gpp-service.ims.icsi.mmtel",
+        "SIP_IARI_REF": "urn:urn-7:3gpp-application.ims.iari.rcs.jio.eucr",
+        "SIP_GSMA_RCS_TELEPHONY": "none",
+        # P-CSCF / transport
+        "SIP_P_CSCF_ADDRESS": sip.get("address", ""),
+        "SIP_P_CSCF_ADDRESS_TYPE": sip.get("address_type", ""),
+        "SIP_SIGNALING_TRANSPORT": "SIPoTLS",
+        "SIP_MEDIA_TRANSPORT": "RTP",
+        # Jio provisioning values
+        "SIP_TOKEN": sip.get("token", ""),
+        "SIP_CONFIG_VERSION": sip.get("version", ""),
+        "SIP_PN_PARAM": sip.get("pnparam", ""),
+        "SIP_PSOLTID": sip.get("psoltid", ""),
+        # Upstream proxy/registrar
         "REGISTRAR_HOST": host,
         "REGISTRAR_PORT": "5068",
         "PROXY_HOST": host,
         "PROXY_PORT": "5068",
-        # DNS inside container: prefer router
         "DNS_SERVERS": host,
         # Defaults/tuning
         "LOG_LEVEL": "5",
         "KEEPALIVE": "15",
-        "MAX_CALLS": "2",
-        # Helpful toggles (can be changed later)
-        "TLS_VERIFY": "0",
     }
 
     script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -423,6 +455,8 @@ def main():
         "PROXY_HOST",
         "DNS_SERVERS",
         "USER_AGENT",
+        "DEVICE_MAC",
+        "SIP_INSTANCE",
     ]:
         print(f"- {k}={env_values[k]}")
     print(f"\nDone. You can now run the proxy with your .env: \n  docker run --rm --name jio-sip --env-file {env_path} --network host ankurpandeyvns/jiofiber-sip-proxy:latest")

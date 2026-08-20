@@ -1,0 +1,43 @@
+1. Only register (get 401 unauthorized error)
+
+cd /mnt/dev/python/jio-fiber-sip && printf 'REGISTER sip:jiofiber.local.html SIP/2.0\r\nVia: SIP/2.0/TLS 192.168.29.60:5068;branch=z9hG4bK-jio-instance-retest-001;rport\r\nMax-Forwards: 70\r\nFrom: <sip:+916546317451@br.wln.ims.jio.com>;tag=jio-instance-retest-001\r\nTo: <sip:+916546317451@br.wln.ims.jio.com>\r\nCall-ID: jio-instance-retest-001@jio-fiber-sip\r\nCSeq: 1 REGISTER\r\nContact: <sip:+916546317451@192.168.29.60:5068;transport=tls>;+sip.instance="<00000000-0000-1000-8000-D06578D62E37>";reg-id=1;+g.3gpp.icsi-ref="urn%3Aurn-7%3A3gpp-service.ims.icsi.mmtel";video;+g.3gpp.iari-ref="urn%3Aurn-7%3A3gpp-application.ims.iari.rcs.jio.eucr";+g.gsma.rcs.telephony="none";q=0.5\r\nP-Access-Network-Info: GPON;PSAPId=+916546\r\nExpires: 300\r\nContent-Length: 0\r\n\r\n' | openssl s_client -quiet -4 -connect jiofiber.local.html:5068 -servername jiofiber.local.html 2>/dev/null
+
+
+
+2. create digest
+
+cd /mnt/dev/python/jio-fiber-sip && python - <<'PY'
+import hashlib
+import os
+from pathlib import Path
+
+for line in Path(".env").read_text().splitlines():
+    if "=" in line and not line.startswith("#"):
+        key, value = line.split("=", 1)
+        os.environ[key] = value
+
+username = os.environ["SIP_AUTH_USER"]
+password = os.environ["SIP_PASSWORD"]
+realm = os.environ["SIP_REALM"]
+nonce = "1787212790:418429577acdfc9826bf3be2e404aede"
+uri = "sip:jiofiber.local.html"
+
+ha1 = hashlib.md5(f"{username}:{realm}:{password}".encode()).hexdigest()
+ha2 = hashlib.md5(f"REGISTER:{uri}".encode()).hexdigest()
+response = hashlib.md5(f"{ha1}:{nonce}:{ha2}".encode()).hexdigest()
+
+print(f"HA1      = {ha1}")
+print(f"HA2      = {ha2}")
+print(f"response = {response}")
+PY
+
+Digests output:
+
+HA1 = ef604cbc27dcce133c303666ddd027eb
+HA2 = 60f97e3a811681901ca3527f949468fe
+response = c35256e7abfccad2bfdb0200f55b9d04
+
+
+3.REGISTER + Digest → SIP 200 OK
+
+cd /mnt/dev/python/jio-fiber-sip && printf 'REGISTER sip:jiofiber.local.html SIP/2.0\r\nVia: SIP/2.0/TLS 192.168.29.60:5068;branch=z9hG4bK-jio-auth-retest-001;rport\r\nMax-Forwards: 70\r\nFrom: <sip:+916546317451@br.wln.ims.jio.com>;tag=jio-auth-retest-001\r\nTo: <sip:+916546317451@br.wln.ims.jio.com>\r\nCall-ID: jio-auth-retest-001@jio-fiber-sip\r\nCSeq: 2 REGISTER\r\nContact: <sip:+916546317451@192.168.29.60:5068;transport=tls>;+sip.instance="<00000000-0000-1000-8000-D06578D62E37>";reg-id=1;+g.3gpp.icsi-ref="urn%3Aurn-7%3A3gpp-service.ims.icsi.mmtel";video;+g.3gpp.iari-ref="urn%3Aurn-7%3A3gpp-application.ims.iari.rcs.jio.eucr";+g.gsma.rcs.telephony="none";q=0.5\r\nP-Access-Network-Info: GPON;PSAPId=+916546\r\nExpires: 300\r\nAuthorization: Digest username="916546317451@br.wln.ims.jio.com",realm="br.wln.ims.jio.com",nonce="1787212790:418429577acdfc9826bf3be2e404aede",uri="sip:jiofiber.local.html",response="c35256e7abfccad2bfdb0200f55b9d04",algorithm=MD5\r\nContent-Length: 0\r\n\r\n' | openssl s_client -quiet -4 -connect jiofiber.local.html:5068 -servername jiofiber.local.html 2>/dev/null
