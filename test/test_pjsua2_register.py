@@ -5,7 +5,7 @@ from pathlib import Path
 import pjsua2
 
 
-PROJECT_ROOT = Path(__file__).resolve().parent
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
 
 def load_env():

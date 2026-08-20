@@ -2,7 +2,7 @@
   "alsa_header": "1783691354000000000:1982",
   "audio_backend": "alsa",
   "jfc_branch": "v2.15.1",
-  "jfc_revision": "b48b5582315ba04aed96b63c149d8d8c2eac07be",
+  "jfc_revision": "a7ce630da2bbdec562f81c89949ce78c741842ae",
   "python_version": "3.14.4",
   "shared_libraries": "true",
   "swig_version": "SWIG Version 4.4.0"

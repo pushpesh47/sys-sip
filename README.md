@@ -35,7 +35,9 @@ The provisioning and SIP registration pipeline has been verified end-to-end:
 
 **SIP/TLS registration is working.**
 
-The remaining calling milestone is to build and verify the SIP call layer, including call establishment, SDP negotiation, RTP/audio media, incoming calls, and clean call teardown.
+**VOICE CALL is working.**
+
+The remaining calling milestone is to build and verify the VIDEO call layer
 
 ---
 
@@ -44,11 +46,15 @@ The remaining calling milestone is to build and verify the SIP call layer, inclu
 ```text
 jio-fiber-sip/
 ├── jio_fiber_sip_provisioner.py
-├── test_pjsua2_register.py
-├── jio_call.py
+├── test
+   ├── raw_voice_call.py
+   ├── test_pjsua2_register.py
+   ├── test_pjsua2_voice_call.py
+├── research
+   ├── manual SIP Register.txt
+   ├── raw_voice_call_output.txt
 ├── setup.py
 ├── README.md
-├── REVERSE_ENGINEERING_FINDINGS.md
 ├── jfc-pjproject/
 └── .env
 ```
@@ -68,7 +74,7 @@ The `.env` file is generated locally and contains SIP credentials. It must never
 ### Python
 
 Python 3.14 is the currently verified Python version.
-```
+
 
 ### PJSUA2
 
@@ -346,13 +352,13 @@ Do not hardcode account-specific credentials into source code.
 The standalone registration test is:
 
 ```text
-test_pjsua2_register.py
+test/test_pjsua2_register.py
 ```
 
 Run it from the project root:
 
 ```bash
-python test_pjsua2_register.py
+python test/test_pjsua2_register.py
 ```
 
 A successful registration must produce a result equivalent to:
@@ -377,6 +383,20 @@ REGISTER
 
 A `200 OK` from the Jio endpoint is the authoritative indication that SIP registration succeeded.
 
+
+## PJSUA2 VOICE CALL Test
+
+The standalone voice call test is:
+
+```text
+test/test_pjsua2_voice_call.py
+```
+
+Run it from the project root:
+
+```bash
+python test/test_pjsua2_voice_call.py
+```
 ---
 
 ## PJSUA2 RFC 5626 Configuration

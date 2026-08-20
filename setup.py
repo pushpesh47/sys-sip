@@ -36,6 +36,9 @@ SYSTEM_PACKAGES = {
         "swig",
     ],
     "libasound2-dev": [],
+    "libopencore-amrnb-dev": [],
+    "libopencore-amrwb-dev": [],
+    "libvo-amrwbenc-dev": [],
     "patchelf": ["patchelf"],
 }
 
@@ -505,7 +508,7 @@ def main() -> None:
 
     ensure_python_packages(venv_python)
     ensure_system_dependencies()
-    ensure_jfc_source()
+    # ensure_jfc_source()
 
     current_state = get_build_state(venv_python)
     previous_state = load_build_state()
