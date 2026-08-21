@@ -678,7 +678,7 @@ Responsible for:
 ### SIP client
 
 ```text
-test_pjsua2_register.py
+test/test_pjsua2_register.py
 ```
 
 Responsible for:

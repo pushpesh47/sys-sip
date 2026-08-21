@@ -1,21 +1,17 @@
 import hashlib
 import os
+import sys
 import re
 import socket
 import ssl
 import time
 from pathlib import Path
 
+# Add project root to sys.path so sip_config can be imported when run directly
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(PROJECT_ROOT))
 
-PROJECT_ROOT = Path(__file__).resolve().parents[1]
-
-
-def load_env():
-    for line in (PROJECT_ROOT / ".env").read_text().splitlines():
-        line = line.strip()
-        if line and not line.startswith("#") and "=" in line:
-            key, value = line.split("=", 1)
-            os.environ[key] = value
+from sip_config import SipConfig, load_env
 
 
 def recv_sip(sock, timeout=5):
@@ -59,13 +55,14 @@ def build_register(
     call_id,
     branch,
     tag,
+    sip_contact_video,
     authorization=None,
 ):
     contact = (
-        f"<sip:+916546317451@{ipv4_address}:{local_port};transport=tls>;"
+        f"<sip:{public_id}@{ipv4_address}:{local_port};transport=tls>;"
         f'+sip.instance="{instance}";'
         f"reg-id={reg_id};"
-        f'{"video" if os.environ.get("SIP_CONTACT_VIDEO", "").lower() == "true" else ""}'
+        f'{"video" if sip_contact_video else ""}'
     )
 
     message = (
@@ -98,8 +95,14 @@ def build_invite(
     reg_id,
     pan_info,
     domain,
+    sip_contact_video,
+    sip_q_value,
+    sip_icsi_ref,
+    sip_iari_ref,
+    sip_gsma_rcs_telephony,
+    sip_number,
 ):
-    destination = "0XXXXXXXXXX"
+    destination = "XXXXXXXX"  # Hardcoded destination number for the invite
 
     sdp = (
         f"v=0\r\n"
@@ -134,14 +137,14 @@ def build_invite(
     call_id = f"python-invite-{token}@jio-fiber-sip"
 
     contact = (
-        f"<sip:+916546317451@{ipv4_address}:{local_port};transport=tls>;"
+        f"<sip:{sip_number}@{ipv4_address}:{local_port};transport=tls>;"
         f'+sip.instance="{instance}";'
         f"reg-id={reg_id};"
         f'+g.3pp.icsi-ref="urn%3Aurn-7%3A3gpp-service.ims.icsi.mmtel";'
         f"video;"
         f'+g.3gpp.iari-ref="urn%3Aurn-7%3A3gpp-application.ims.iari.rcs.jio.eucr";'
-        f'+g.gsma.rcs.telephony="none";'
-        f'q={os.environ.get("SIP_Q_VALUE", "0.5")}'
+        f'+g.gsma.rcs.telephony="{sip_gsma_rcs_telephony}";'
+        f'q={sip_q_value}'
     )
 
     invite = (
@@ -171,20 +174,21 @@ def build_invite(
 
 def main():
     load_env()
+    config = SipConfig()
 
-    registrar_host = os.environ["REGISTRAR_HOST"]
-    registrar_port = int(os.environ["REGISTRAR_PORT"])
-    ipv4_address = os.environ["IPV4_ADDRESS"]
-    local_port = int(os.environ["LOCAL_PORT"])
-    rtp_port = int(os.environ["RTP_PORT"])
-    public_id = os.environ["SIP_PUBLIC_USER_IDENTITY"]
-    username = os.environ["SIP_AUTH_USER"]
-    password = os.environ["SIP_PASSWORD"]
-    realm = os.environ["SIP_REALM"]
-    instance = os.environ["SIP_INSTANCE"]
-    reg_id = os.environ["SIP_REG_ID"]
-    pan_info = os.environ["P_ACCESS_NETWORK_INFO"]
-    domain = os.environ["SIP_HOME_NETWORK_DOMAIN"]
+    registrar_host = config.registrar_host
+    registrar_port = config.registrar_port
+    ipv4_address = config.ipv4_address
+    local_port = config.local_port
+    rtp_port = config.rtp_port
+    public_id = config.public_id
+    username = config.auth_username
+    password = config.sip_password
+    realm = config.sip_realm
+    instance = config.sip_instance
+    reg_id = config.sip_reg_id
+    pan_info = config.p_access_network_info
+    domain = config.sip_home_network_domain
 
     register_call_id = f"python-register-{int(time.time())}@jio-fiber-sip"
 
@@ -221,6 +225,7 @@ def main():
         register_call_id,
         "z9hG4bK-python-register-001",
         "python-register-001",
+        config.sip_contact_video,
     )
 
     tls_socket.sendall(register.encode())
@@ -274,6 +279,7 @@ def main():
         register_call_id,
         "z9hG4bK-python-register-002",
         "python-register-001",
+        config.sip_contact_video,
         authorization,
     )
 
@@ -302,6 +308,12 @@ def main():
         reg_id,
         pan_info,
         domain,
+        config.sip_contact_video,
+        config.sip_q_value,
+        config.sip_icsi_ref,
+        config.sip_iari_ref,
+        config.sip_gsma_rcs_telephony,
+        config.sip_number,
     )
 
     tls_socket.sendall(invite.encode())
@@ -361,7 +373,7 @@ def main():
                     f"Call-ID: {invite_call_id}\r\n"
                     f"CSeq: {prack_cseq} PRACK\r\n"
                     f"RAck: {rseq} 1 INVITE\r\n"
-                    f"Contact: <sip:+916546317451@{ipv4_address}:{local_port};transport=tls>\r\n"
+                    f"Contact: {config.build_prack_contact()}\r\n"
                     f"Supported: outbound, path, gruu, replaces, timer, norefersub, 100rel\r\n"
                     f"User-Agent: JFVoice/1.0\r\n"
                     f"Content-Length: 0\r\n"
@@ -439,7 +451,7 @@ def main():
                         f"To: {update_to_match.group(1)}\r\n"
                         f"Call-ID: {update_call_id_match.group(1).strip()}\r\n"
                         f"CSeq: {update_cseq_match.group(1)} UPDATE\r\n"
-                        f"Contact: <sip:+916546317451@{ipv4_address}:{local_port};transport=tls>\r\n"
+                        f"Contact: {config.build_prack_contact()}\r\n"
                         f"Supported: outbound, path, gruu, replaces, timer, norefersub, 100rel\r\n"
                         f"User-Agent: JFVoice/1.0\r\n"
                         f"Content-Type: application/sdp\r\n"

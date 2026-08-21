@@ -390,51 +390,46 @@ def main():
 
     # Step 4: generate .env
     local_ip = get_local_ipv4()
+    sip_number = f"+91{msisdn}"
     env_values = {
+        # Container / Device
         "CONTAINER_NAME": "jfc-pjsua",
         "HOSTNAME_OVERRIDE": HARD_HOSTNAME,
         "DEVICE_MAC": mac,
         "USER_AGENT": "ParikaProxy/1.0",
-        # Local bind/public IP for Contact shaping
+        # Network
         "IPV4_ADDRESS": local_ip,
         "LOCAL_PORT": "5061",
         "TLS_PORT": "5068",
         "RTP_PORT": "52000",
-        # SIP/IMS identities
-        "PUBLIC_ID": sip.get("public_user_identity") or f"sip:+91{msisdn}@{realm}",
-        "SIP_AUTH_USER": username,
+        # SIP Account (canonical)
+        "SIP_NUMBER": sip_number,
         "SIP_PASSWORD": userpwd,
         "SIP_REALM": realm,
         "SIP_HOME_NETWORK_DOMAIN": sip.get("home_network_domain_name", ""),
-        "SIP_ADDRESS": sip.get("address", ""),
-        "SIP_PRIVATE_USER_IDENTITY": sip.get("private_user_identity", ""),
-        "SIP_PUBLIC_USER_IDENTITY": sip.get("public_user_identity", ""),
-        # SIP registration/device identity from Jio provisioning
-        "SIP_INSTANCE": sip.get("uuid_value", ""),
-        "SIP_REG_ID": "1",
-        "SIP_CONTACT_VIDEO": "true",
-        "SIP_Q_VALUE": "0.5",
-        "P_ACCESS_NETWORK_INFO": "GPON;PSAPId=" + sip.get("psoltid", ""),
-        # IMS service parameters
-        "SIP_ICSI_REF": "urn:urn-7:3gpp-service.ims.icsi.mmtel",
-        "SIP_IARI_REF": "urn:urn-7:3gpp-application.ims.iari.rcs.jio.eucr",
-        "SIP_GSMA_RCS_TELEPHONY": "none",
-        # P-CSCF / transport
+        # SIP Server / Transport
         "SIP_P_CSCF_ADDRESS": sip.get("address", ""),
         "SIP_P_CSCF_ADDRESS_TYPE": sip.get("address_type", ""),
         "SIP_SIGNALING_TRANSPORT": "SIPoTLS",
         "SIP_MEDIA_TRANSPORT": "RTP",
-        # Jio provisioning values
+        # SIP Identity / Registration
+        "SIP_INSTANCE": sip.get("uuid_value", ""),
+        "SIP_REG_ID": "1",
+        "SIP_CONTACT_VIDEO": "true",
+        "SIP_Q_VALUE": "0.5",
+        # Jio IMS Headers / Parameters
+        "P_ACCESS_NETWORK_INFO": "GPON;PSAPId=" + sip.get("psoltid", ""),
+        "SIP_ICSI_REF": "urn:urn-7:3gpp-service.ims.icsi.mmtel",
+        "SIP_IARI_REF": "urn:urn-7:3gpp-application.ims.iari.rcs.jio.eucr",
+        "SIP_GSMA_RCS_TELEPHONY": "none",
+        # Provisioning metadata
         "SIP_TOKEN": sip.get("token", ""),
         "SIP_CONFIG_VERSION": sip.get("version", ""),
         "SIP_PN_PARAM": sip.get("pnparam", ""),
         "SIP_PSOLTID": sip.get("psoltid", ""),
-        # Upstream proxy/registrar
+        # Upstream proxy/registrar (derived from P-CSCF)
         "REGISTRAR_HOST": host,
         "REGISTRAR_PORT": "5068",
-        "PROXY_HOST": host,
-        "PROXY_PORT": "5068",
-        "DNS_SERVERS": host,
         # Defaults/tuning
         "LOG_LEVEL": "5",
         "KEEPALIVE": "15",
@@ -448,12 +443,9 @@ def main():
     for k in [
         "HOSTNAME_OVERRIDE",
         "IPV4_ADDRESS",
-        "PUBLIC_ID",
-        "SIP_AUTH_USER",
+        "SIP_NUMBER",
         "SIP_REALM",
         "REGISTRAR_HOST",
-        "PROXY_HOST",
-        "DNS_SERVERS",
         "USER_AGENT",
         "DEVICE_MAC",
         "SIP_INSTANCE",

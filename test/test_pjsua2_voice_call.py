@@ -1,19 +1,15 @@
 import os
+import sys
 import time
 from pathlib import Path
 
+# Add project root to sys.path so sip_config can be imported when run directly
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(PROJECT_ROOT))
+
 import pjsua2
 
-
-PROJECT_ROOT = Path(__file__).resolve().parents[1]
-
-
-def load_env():
-    for line in (PROJECT_ROOT / ".env").read_text().splitlines():
-        line = line.strip()
-        if line and not line.startswith("#") and "=" in line:
-            key, value = line.split("=", 1)
-            os.environ[key] = value
+from sip_config import SipConfig, load_env
 
 
 class SipCall(pjsua2.Call):
@@ -89,6 +85,10 @@ class SipCall(pjsua2.Call):
 
 
 class SipAccount(pjsua2.Account):
+    def __init__(self, config):
+        super().__init__()
+        self.config = config
+
     def onRegState(self, prm):
         info = self.getInfo()
         print(f"REGISTRATION: code={prm.code} reason={prm.reason} active={info.regIsActive}")
@@ -96,20 +96,21 @@ class SipAccount(pjsua2.Account):
         if prm.code == 200 and info.regIsActive:
             self.call = SipCall(self)
 
+            # Callee number - change this to call different destinations
+            callee_number = "XXXXXXXX"  # Hardcoded destination number for the call
+
             call_parameters = pjsua2.CallOpParam(True)
             # Use query parameter format like raw implementation
-            call_parameters.txOption.targetUri = (
-                "sip:0XXXXXXXXXX@br.wln.ims.jio.com?phone-context=br.wln.ims.jio.com&user=phone"
-            )
+            call_parameters.txOption.targetUri = self.config.build_callee_uri(callee_number)
 
             preferred_identity = pjsua2.SipHeader()
             preferred_identity.hName = "P-Preferred-Identity"
-            preferred_identity.hValue = "<sip:+XXXXXXXXXX@br.wln.ims.jio.com>"
+            preferred_identity.hValue = self.config.p_preferred_identity
             call_parameters.txOption.headers.append(preferred_identity)
 
             access_network_info = pjsua2.SipHeader()
             access_network_info.hName = "P-Access-Network-Info"
-            access_network_info.hValue = os.environ["P_ACCESS_NETWORK_INFO"]
+            access_network_info.hValue = self.config.p_access_network_info
             call_parameters.txOption.headers.append(access_network_info)
 
             # Add missing Supported headers
@@ -125,7 +126,7 @@ class SipAccount(pjsua2.Account):
             call_parameters.txOption.headers.append(allow)
 
             self.call.makeCall(
-                "sip:0XXXXXXXXXX@br.wln.ims.jio.com?phone-context=br.wln.ims.jio.com&user=phone",
+                self.config.build_callee_uri(callee_number),
                 call_parameters
             )
 
@@ -140,17 +141,18 @@ class SipAccount(pjsua2.Account):
 
 def main():
     load_env()
+    config = SipConfig()
 
-    username = os.environ["SIP_AUTH_USER"]
-    password = os.environ["SIP_PASSWORD"]
-    realm = os.environ["SIP_REALM"]
-    host = os.environ["REGISTRAR_HOST"]
+    username = config.auth_username
+    password = config.sip_password
+    realm = config.sip_realm
+    host = config.registrar_host
 
     endpoint = pjsua2.Endpoint()
     endpoint.libCreate()
 
     ep_config = pjsua2.EpConfig()
-    ep_config.uaConfig.userAgent = "JFVoice/1.0"
+    ep_config.uaConfig.userAgent = config.user_agent
     ep_config.logConfig.level = 5
     ep_config.logConfig.consoleLevel = 5
     # Set ptime to 20ms
@@ -209,7 +211,7 @@ def main():
 
     # Use local port 5061 for TLS transport (matching raw implementation)
     transport_config = pjsua2.TransportConfig()
-    transport_config.port = 5061
+    transport_config.port = config.local_port
     transport_config.tlsConfig.verifyServer = False
 
     transport_id = endpoint.transportCreate(
@@ -221,33 +223,23 @@ def main():
 
     account_config = pjsua2.AccountConfig()
     account_config.natConfig.sipOutboundUse = False
-    account_config.idUri = os.environ["PUBLIC_ID"]
+    account_config.idUri = config.public_id
 
-    account_config.regConfig.registrarUri = f"sip:{host}:{os.environ['REGISTRAR_PORT']}"
-    account_config.sipConfig.proxies.append("sip:jiofiber.local.html:5068;transport=tls")
+    account_config.regConfig.registrarUri = config.registrar_uri
+    account_config.sipConfig.proxies.append(config.proxy_uri)
 
     account_config.regConfig.headers = pjsua2.SipHeaderVector()
 
     header = pjsua2.SipHeader()
     header.hName = "P-Access-Network-Info"
-    header.hValue = os.environ["P_ACCESS_NETWORK_INFO"]
+    header.hValue = config.p_access_network_info
     account_config.regConfig.headers.append(header)
 
     # Contact parameters for REGISTER - shortened to avoid buffer overflow
-    account_config.regConfig.contactParams = (
-        f";+sip.instance=\"<{os.environ['SIP_INSTANCE']}>\""
-        f";reg-id={os.environ['SIP_REG_ID']}"
-        f";+g.3pp.icsi-ref=\"urn%3Aurn-7%3A3gpp-service.ims.icsi.mmtel\""
-        f";video"
-    )
+    account_config.regConfig.contactParams = config.build_register_contact_params()
 
     # Contact parameters for all SIP messages (including INVITE) - shortened
-    account_config.sipConfig.contactParams = (
-        f";+sip.instance=\"<{os.environ['SIP_INSTANCE']}>\""
-        f";reg-id={os.environ['SIP_REG_ID']}"
-        f";+g.3pp.icsi-ref=\"urn%3Aurn-7%3A3gpp-service.ims.icsi.mmtel\""
-        f";video"
-    )
+    account_config.sipConfig.contactParams = config.build_invite_contact_params()
 
     account_config.sipConfig.transportId = transport_id
 
@@ -261,11 +253,11 @@ def main():
     account_config.sipConfig.authCreds = pjsua2.AuthCredInfoVector()
     account_config.sipConfig.authCreds.append(cred)
 
-    account = SipAccount()
+    account = SipAccount(config)
     account.create(account_config)
 
     print("PJSUA2 account created.")
-    print(f"Registrar: {host}:5068")
+    print(f"Registrar: {host}:{config.registrar_port}")
     print(f"Username:  {username}")
     print("Waiting for registration and call...")
 
