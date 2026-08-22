@@ -787,13 +787,22 @@ class DialerWindow(QMainWindow):
         self.call_duration_label.setText(f"{minutes:02d}:{seconds:02d}")
 
     def _on_mic_toggle(self) -> None:
-        """Handle microphone mute/unmute toggle."""
-        self._mic_muted = not self._mic_muted
+        """Toggle microphone mute state."""
+        if self._current_call_id is None:
+            return
+
+        muted = not self._mic_muted
+
+        if not self._service.engine.set_microphone_muted(self._current_call_id, muted):
+            return
+
+        self._mic_muted = muted
+
         if self._mic_muted:
-            self.mic_button.setText("🎤 MIC OFF")
+            self.mic_button.setText("🔇 MIC OFF")
             self.mic_button.setStyleSheet("""
                 QPushButton {
-                    background-color: #fdeaea;
+                    background-color: #ffebee;
                     color: #c62828;
                     border: 1px solid #ef9a9a;
                     border-radius: 6px;
@@ -802,7 +811,7 @@ class DialerWindow(QMainWindow):
                     padding: 0 20px;
                 }
                 QPushButton:hover {
-                    background-color: #fcdada;
+                    background-color: #ffcdd2;
                     border-color: #e57373;
                 }
                 QPushButton:pressed {
@@ -829,8 +838,6 @@ class DialerWindow(QMainWindow):
                     background-color: #a5d6a7;
                 }
             """)
-        # TODO: Connect to actual audio mute when media architecture supports it
-        # For now, this is a UI-only toggle
 
     def _on_call_clicked(self) -> None:
         """Handle CALL button click."""

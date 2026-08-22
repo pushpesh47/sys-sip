@@ -484,6 +484,33 @@ class SipEngine:
         except Exception:
             pass
 
+    def set_microphone_muted(self, call_id: int, muted: bool) -> bool:
+        """Mute or unmute microphone transmission for a call."""
+        if not self._endpoint:
+            return False
+
+        with self._account_lock:
+            if call_id not in self._calls:
+                return False
+
+        self._pending_commands.put(("mute", (call_id, muted), {}))
+        return True
+        
+    def _get_call_audio_media(self, call_id: int):
+        """Get audio media for an active call."""
+        call = self._calls.get(call_id)
+        if not call:
+            return None
+
+        try:
+            call_media = call.getMedia(0)
+            if call_media:
+                return pjsua2.AudioMedia.typecastFromMedia(call_media)
+        except Exception:
+            pass
+
+        return None
+
     def _build_callee_uri(self, destination: str) -> str:
         """Build callee SIP URI from destination number."""
         # For Jio Fiber, use phone-context parameter
@@ -542,6 +569,8 @@ class SipEngine:
                     self._execute_reject(*args, **kwargs)
                 elif cmd == "answer":
                     self._execute_answer(*args, **kwargs)
+                elif cmd == "mute":
+                    self._execute_mute(*args, **kwargs)
                 else:
                     pass  # Unknown command - ignore
             except Exception:
@@ -558,6 +587,29 @@ class SipEngine:
                 call.answer(pjsua2.CallOpParam(True))
             except Exception:
                 pass
+
+    def _execute_mute(self, call_id: int, muted: bool) -> None:
+        """Execute microphone mute/unmute on the event thread."""
+        if not self._endpoint:
+            return
+
+        with self._account_lock:
+            if call_id not in self._calls:
+                return
+
+        try:
+            call_media = self._get_call_audio_media(call_id)
+            if not call_media:
+                return
+
+            capture_device = self._endpoint.audDevManager().getCaptureDevMedia()
+
+            if muted:
+                capture_device.stopTransmit(call_media)
+            else:
+                capture_device.startTransmit(call_media)
+        except Exception:
+            pass
 
     def _execute_reject(self, call_id: int) -> None:
         """Execute incoming call rejection on the event thread."""
