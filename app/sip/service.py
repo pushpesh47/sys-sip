@@ -264,6 +264,19 @@ class SipApplicationService:
         if provider and hasattr(provider, 'cancel_provisioning'):
             provider.cancel_provisioning()
 
+    def add_state_callback(self, callback) -> None:
+        """Add a callback for registration state changes (thread-safe via Qt bridge)."""
+        bridge = self._get_qt_bridge()
+        bridge.registration_state_changed.connect(callback)
+
+    def remove_state_callback(self, callback) -> None:
+        """Remove a registration state callback."""
+        bridge = self._get_qt_bridge()
+        try:
+            bridge.registration_state_changed.disconnect(callback)
+        except TypeError:
+            pass  # Callback not connected
+
     def remove_account(self, index: int) -> ProvisioningResult:
         """Remove a provisioned account."""
         provider = self._providers.get(index)
