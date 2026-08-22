@@ -261,13 +261,39 @@ def main():
     print(f"Username:  {username}")
     print("Waiting for registration and call...")
 
-    # Wait for registration and call completion
-    for _ in range(60):
-        endpoint.libHandleEvents(1000)
+    # Wait for call completion
+    try:
+        while True:
+            endpoint.libHandleEvents(1000)
+
+            if hasattr(account, 'call') and account.call:
+                try:
+                    call_info = account.call.getInfo()
+                    if call_info.stateText == "DISCONNECTED":
+                        break
+                except pjsua2.Error:
+                    break
+    except KeyboardInterrupt:
+        print("\nCaller hangup requested.")
+
         if hasattr(account, 'call') and account.call:
-            call_info = account.call.getInfo()
-            if call_info.stateText == "DISCONNECTED":
-                break
+            try:
+                call_info = account.call.getInfo()
+                if call_info.stateText != "DISCONNECTED":
+                    account.call.hangup(pjsua2.CallOpParam())
+            except pjsua2.Error as e:
+                print(f"Hangup error: {e}")
+
+        while True:
+            endpoint.libHandleEvents(1000)
+
+            if hasattr(account, 'call') and account.call:
+                try:
+                    call_info = account.call.getInfo()
+                    if call_info.stateText == "DISCONNECTED":
+                        break
+                except pjsua2.Error:
+                    break
 
     account.call = None
     account.shutdown()
