@@ -1,6 +1,9 @@
 import os
 import sys
 import time
+import select
+import termios
+import tty
 from pathlib import Path
 
 # Add project root to sys.path so sip_config can be imported when run directly
@@ -13,6 +16,10 @@ from sip_config import SipConfig, load_env
 
 
 class SipCall(pjsua2.Call):
+    def __init__(self, account):
+        super().__init__(account)
+        self._audio_media = None
+
     def onCallSdpCreated(self, prm):
         sdp = prm.sdp.wholeSdp
         lines = sdp.splitlines()
@@ -93,7 +100,8 @@ class SipCall(pjsua2.Call):
             if media.status != pjsua2.PJSUA_CALL_MEDIA_ACTIVE:
                 continue
 
-            audio_media = self.getAudioMedia(media_index)
+            self._audio_media = self.getAudioMedia(media_index)
+            audio_media = self._audio_media
             endpoint = pjsua2.Endpoint.instance()
 
             capture_device = endpoint.audDevManager().getCaptureDevMedia()
@@ -103,6 +111,21 @@ class SipCall(pjsua2.Call):
             capture_device.startTransmit(audio_media)
 
             print("[CALL] Audio media connected.")
+
+    def set_microphone_muted(self, muted):
+        endpoint = pjsua2.Endpoint.instance()
+        capture_device = endpoint.audDevManager().getCaptureDevMedia()
+
+        if not self._audio_media:
+            print("[CALL] Audio media is not available.")
+            return
+
+        if muted:
+            capture_device.stopTransmit(self._audio_media)
+        else:
+            capture_device.startTransmit(self._audio_media)
+
+        print(f"[CALL] Microphone {'muted' if muted else 'unmuted'}.")
 
 
 class SipAccount(pjsua2.Account):
@@ -284,19 +307,36 @@ def main():
     print(f"Username:  {username}")
     print("Waiting for registration and call...")
 
+    muted = False
+    old_terminal_settings = termios.tcgetattr(sys.stdin)
+    tty.setcbreak(sys.stdin.fileno())
     # Wait for call completion
     try:
         while True:
-            endpoint.libHandleEvents(1000)
+            endpoint.libHandleEvents(100)
+
+            if hasattr(account, 'call') and account.call:
+                ready, _, _ = select.select([sys.stdin], [], [], 0)
+
+                if ready:
+                    command = sys.stdin.read(1)
+
+                    if command.lower() == "m":
+                        muted = not muted
+                        account.call.set_microphone_muted(muted)
 
             if hasattr(account, 'call') and account.call:
                 try:
+                    if account.call.getId() < 0:
+                        continue
+
                     call_info = account.call.getInfo()
                     if call_info.stateText == "DISCONNECTED":
                         break
                 except pjsua2.Error:
-                    break
+                    continue
     except KeyboardInterrupt:
+        termios.tcsetattr(sys.stdin, termios.TCSADRAIN, old_terminal_settings)
         print("\nCaller hangup requested.")
 
         if hasattr(account, 'call') and account.call:
@@ -318,6 +358,7 @@ def main():
                 except pjsua2.Error:
                     break
 
+    termios.tcsetattr(sys.stdin, termios.TCSADRAIN, old_terminal_settings)
     account.call = None
     account.shutdown()
     endpoint.libDestroy()
