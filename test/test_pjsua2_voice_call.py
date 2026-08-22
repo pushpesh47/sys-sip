@@ -83,6 +83,27 @@ class SipCall(pjsua2.Call):
         
         prm.sdp.wholeSdp = final_sdp
 
+    def onCallMediaState(self, prm):
+        call_info = self.getInfo()
+
+        for media_index, media in enumerate(call_info.media):
+            if media.type != pjsua2.PJMEDIA_TYPE_AUDIO:
+                continue
+
+            if media.status != pjsua2.PJSUA_CALL_MEDIA_ACTIVE:
+                continue
+
+            audio_media = self.getAudioMedia(media_index)
+            endpoint = pjsua2.Endpoint.instance()
+
+            capture_device = endpoint.audDevManager().getCaptureDevMedia()
+            playback_device = endpoint.audDevManager().getPlaybackDevMedia()
+
+            audio_media.startTransmit(playback_device)
+            capture_device.startTransmit(audio_media)
+
+            print("[CALL] Audio media connected.")
+
 
 class SipAccount(pjsua2.Account):
     def __init__(self, config):
@@ -97,7 +118,7 @@ class SipAccount(pjsua2.Account):
             self.call = SipCall(self)
 
             # Callee number - change this to call different destinations
-            callee_number = "08149384995" #Change this to the desired callee number
+            callee_number = "0XXXXXXXXXX"
 
             call_parameters = pjsua2.CallOpParam(True)
             # Use query parameter format like raw implementation
@@ -157,6 +178,8 @@ def main():
     ep_config.logConfig.consoleLevel = 5
     # Set ptime to 20ms
     ep_config.medConfig.ptime = 20
+    ep_config.medConfig.ecOptions = 1
+    ep_config.medConfig.ecTailLen = 200
     ep_config.medConfig.audioFramePtime = 20
     endpoint.libInit(ep_config)
 
