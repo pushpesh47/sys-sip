@@ -97,7 +97,7 @@ class SipAccount(pjsua2.Account):
             self.call = SipCall(self)
 
             # Callee number - change this to call different destinations
-            callee_number = "XXXXXXXX"  # Hardcoded destination number for the call
+            callee_number = "08149384995" #Change this to the desired callee number
 
             call_parameters = pjsua2.CallOpParam(True)
             # Use query parameter format like raw implementation

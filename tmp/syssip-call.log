@@ -1,0 +1,674 @@
+23:16:12.996         os_core_unix.c !pjlib 2.15.1 for POSIX initialized
+23:16:12.996         sip_endpoint.c  .Creating endpoint instance...
+23:16:12.996                  pjlib  .select() I/O Queue created (0x10ecc348)
+23:16:12.996         sip_endpoint.c  .Module "mod-msg-print" registered
+23:16:12.996        sip_transport.c  .Transport manager created.
+23:16:12.996           pjsua_core.c  .PJSUA state changed: NULL --> CREATED
+23:16:12.996         sip_endpoint.c  .Module "mod-pjsua-log" registered
+23:16:12.996         sip_endpoint.c  .Module "mod-tsx-layer" registered
+23:16:12.996         sip_endpoint.c  .Module "mod-stateful-util" registered
+23:16:12.996         sip_endpoint.c  .Module "mod-ua" registered
+23:16:12.996         sip_endpoint.c  .Module "mod-100rel" registered
+23:16:12.996         sip_endpoint.c  .Module "mod-pjsua" registered
+23:16:12.996         sip_endpoint.c  .Module "mod-invite" registered
+23:16:13.012             alsa_dev.c  ..Added sound device pipewire
+23:16:13.016             alsa_dev.c  ..Added sound device default
+23:16:13.054             alsa_dev.c  ..Added sound device hw:CARD=NVidia,DEV=3
+23:16:13.055             alsa_dev.c  ..Added sound device hw:CARD=NVidia,DEV=7
+23:16:13.055             alsa_dev.c  ..Added sound device hw:CARD=NVidia,DEV=8
+23:16:13.055             alsa_dev.c  ..Added sound device hw:CARD=NVidia,DEV=9
+23:16:13.056             alsa_dev.c  ..Added sound device plughw:CARD=NVidia,DEV=3
+23:16:13.057             alsa_dev.c  ..Added sound device plughw:CARD=NVidia,DEV=7
+23:16:13.057             alsa_dev.c  ..Added sound device plughw:CARD=NVidia,DEV=8
+23:16:13.057             alsa_dev.c  ..Added sound device plughw:CARD=NVidia,DEV=9
+23:16:13.061             alsa_dev.c  ..Added sound device hdmi:CARD=NVidia,DEV=0
+23:16:13.061             alsa_dev.c  ..Added sound device hdmi:CARD=NVidia,DEV=1
+23:16:13.061             alsa_dev.c  ..Added sound device hdmi:CARD=NVidia,DEV=2
+23:16:13.062             alsa_dev.c  ..Added sound device hdmi:CARD=NVidia,DEV=3
+23:16:13.069             alsa_dev.c  ..Added sound device dmix:CARD=NVidia,DEV=3
+23:16:13.070             alsa_dev.c  ..Added sound device dmix:CARD=NVidia,DEV=7
+23:16:13.071             alsa_dev.c  ..Added sound device dmix:CARD=NVidia,DEV=8
+23:16:13.072             alsa_dev.c  ..Added sound device dmix:CARD=NVidia,DEV=9
+23:16:13.148             alsa_dev.c  ..Added sound device hw:CARD=sofhdadsp,DEV=0
+23:16:13.162             alsa_dev.c  ..Added sound device hw:CARD=sofhdadsp,DEV=3
+23:16:13.163             alsa_dev.c  ..Added sound device hw:CARD=sofhdadsp,DEV=4
+23:16:13.163             alsa_dev.c  ..Added sound device hw:CARD=sofhdadsp,DEV=5
+23:16:13.163             alsa_dev.c  ..Added sound device hw:CARD=sofhdadsp,DEV=6
+23:16:13.163             alsa_dev.c  ..Added sound device hw:CARD=sofhdadsp,DEV=7
+23:16:13.163             alsa_dev.c  ..Added sound device hw:CARD=sofhdadsp,DEV=31
+23:16:13.164             alsa_dev.c  ..Added sound device plughw:CARD=sofhdadsp,DEV=0
+23:16:13.164             alsa_dev.c  ..Added sound device plughw:CARD=sofhdadsp,DEV=3
+23:16:13.164             alsa_dev.c  ..Added sound device plughw:CARD=sofhdadsp,DEV=4
+23:16:13.164             alsa_dev.c  ..Added sound device plughw:CARD=sofhdadsp,DEV=5
+23:16:13.164             alsa_dev.c  ..Added sound device plughw:CARD=sofhdadsp,DEV=6
+23:16:13.165             alsa_dev.c  ..Added sound device plughw:CARD=sofhdadsp,DEV=7
+23:16:13.165             alsa_dev.c  ..Added sound device plughw:CARD=sofhdadsp,DEV=31
+23:16:13.171             alsa_dev.c  ..ALSA driver found 32 devices
+23:16:13.171             alsa_dev.c  ..ALSA initialized
+23:16:13.171                  pjlib  ..select() I/O Queue created (0x10f77cb8)
+23:16:13.172           conference.c  ..Creating conference bridge with 254 ports
+23:16:13.172           Master/sound  ..Using delay buffer with WSOLA.
+23:16:13.179         sip_endpoint.c  .Module "mod-evsub" registered
+23:16:13.179         sip_endpoint.c  .Module "mod-presence" registered
+23:16:13.179                evsub.c  .Event pkg "presence" registered by mqt.qpa.services: Failed to register with host portal QDBusError("org.freedesktop.portal.Error.Failed", "Could not register app ID: Connection already associated with an application ID")
+od-presence
+23:16:13.179         sip_endpoint.c  .Module "mod-dlg_even" registered
+23:16:13.179                evsub.c  .Event pkg "dialog" registered by mod-dlg_even
+23:16:13.179         sip_endpoint.c  .Module "mod-mwi" registered
+23:16:13.179                evsub.c  .Event pkg "message-summary" registered by mod-mwi
+23:16:13.179         sip_endpoint.c  .Module "mod-refer" registered
+23:16:13.179                evsub.c  .Event pkg "refer" registered by mod-refer
+23:16:13.179         sip_endpoint.c  .Module "mod-pjsua-pres" registered
+23:16:13.179         sip_endpoint.c  .Module "mod-pjsua-im" registered
+23:16:13.179         sip_endpoint.c  .Module "mod-pjsua-options" registered
+23:16:13.179           pjsua_core.c  .1 SIP worker threads created
+23:16:13.179           pjsua_core.c  .pjsua version 2.15.1 for Linux-7.0.0.29/x86_64/glibc-2.43 initialized
+23:16:13.179           pjsua_core.c  .PJSUA state changed: CREATED --> INIT
+23:16:13.180             tlstp:5061  SIP TLS listener is ready for incoming connections at 192.168.29.60:5061
+23:16:13.180           pjsua_core.c  PJSUA state changed: INIT --> STARTING
+23:16:13.180         sip_endpoint.c  .Module "mod-unsolicited-mwi" registered
+23:16:13.180           pjsua_core.c  .PJSUA state changed: STARTING --> RUNNING
+23:16:13.181            pjsua_acc.c  Adding account: id=sip:+916546317451@br.wln.ims.jio.com
+23:16:13.181            pjsua_acc.c  .Account sip:+916546317451@br.wln.ims.jio.com added with id 0
+23:16:13.181            pjsua_acc.c  .Acc 0: setting registration..
+23:16:13.184         tlsc0x10fc5e68  ..TLS client transport created
+23:16:13.184         tlsc0x10fc5e68  ..TLS transport 192.168.29.60:47465 is connecting to Jiofiber.local.html:5068...
+23:16:13.184            pjsua_acc.c  ..Contact for acc 0 updated: <sip:+916546317451@192.168.29.60:47465;transport=TLS>;+sip.instance="<00000000-0000-1000-8000-000026214437>";reg-id=1;video;+sip.instance="<00000000-0000-1000-8000-000026214437>";reg-id=1;video
+23:16:13.184             sip_util.c  ..Request msg REGISTER/cseq=39965 (tdta0x10fc7d18) created.
+23:16:13.186          tsx0x10fc9cd8  ...Transaction created for Request msg REGISTER/cseq=39966 (tdta0x10fc7d18)
+23:16:13.186          tsx0x10fc9cd8  ..Sending Request msg REGISTER/cseq=39966 (tdta0x10fc7d18) in state Null
+23:16:13.186          sip_resolve.c  ...DNS resolver not available, target 'Jiofiber.local.html:5068' type=TLS will be resolved with getaddrinfo()
+23:16:13.189          sip_resolve.c  ...Target 'Jiofiber.local.html:5068' type=TLS resolved to '192.168.29.1:5068' type=TLS (TLS transport)
+23:16:13.189           pjsua_core.c  ...TX 823 bytes Request msg REGISTER/cseq=39966 (tdta0x10fc7d18) to TLS 192.168.29.1:5068:
+REGISTER sip:jiofiber.local.html:5068 SIP/2.0
+Via: SIP/2.0/TLS 192.168.29.60:47465;rport;branch=z9hG4bKPjdnfrCgOhfRlMOPfSW97Lglvgrv7v9sB7;alias
+Route: <sip:Jiofiber.local.html:5068;transport=tls;lr>
+Max-Forwards: 70
+From: <sip:+916546317451@br.wln.ims.jio.com>;tag=hgNTmHWReRCTwxcuUt5l9xk7mqN7sNc.
+To: <sip:+916546317451@br.wln.ims.jio.com>
+Call-ID: 9Ze2FZRHwU0bGG57XRD.tRnD3KU5ss7s
+CSeq: 39966 REGISTER
+P-Access-Network-Info: GPON;PSAPId=+916546
+User-Agent: ParikaProxy/1.0
+Contact: <sip:+916546317451@192.168.29.60:47465;transport=TLS>;+sip.instance="<00000000-0000-1000-8000-000026214437>";reg-id=1;video;+sip.instance="<00000000-0000-1000-8000-000026214437>";reg-id=1;video
+Expires: 300
+Allow: PRACK, INVITE, ACK, BYE, CANCEL, UPDATE, INFO, SUBSCRIBE, NOTIFY, REFER, MESSAGE, OPTIONS
+Content-Length:  0
+
+
+--end msg--
+23:16:13.189          tsx0x10fc9cd8  ...State changed from Null to Calling, event=TX_MSG
+23:16:13.189            pjsua_acc.c  ..Acc 0: Registration sent
+23:16:13.189        ssl_sock_ossl.c !OpenSSL version : 810549328
+23:16:14.228         tlsc0x10fc5e68  TLS transport 192.168.29.60:47465 is connected to Jiofiber.local.html:5068
+23:16:14.228         tlsc0x10fc5e68  Request msg REGISTER/cseq=39966 (tdta0x10fc7d18) sent successfully
+23:16:14.255         sip_endpoint.c  Processing incoming message: Response msg 401/REGISTER/cseq=39966 (rdata0x10fc6160)
+23:16:14.255           pjsua_core.c  .RX 513 bytes Response msg 401/REGISTER/cseq=39966 (rdata0x10fc6160) from TLS 192.168.29.1:5068:
+SIP/2.0 401 Unauthorized
+Via: SIP/2.0/TLS 192.168.29.60:47465;rport=47465;branch=z9hG4bKPjdnfrCgOhfRlMOPfSW97Lglvgrv7v9sB7;alias
+To: <sip:+916546317451@br.wln.ims.jio.com>;tag=dde68a2f
+From: <sip:+916546317451@br.wln.ims.jio.com>;tag=hgNTmHWReRCTwxcuUt5l9xk7mqN7sNc.
+Call-ID: 9Ze2FZRHwU0bGG57XRD.tRnD3KU5ss7s
+CSeq: 39966 REGISTER
+User-Agent: JCOW414/JUICEJFV-1.3.32
+WWW-Authenticate: Digest nonce="1787334373:421ec238ca636117a86910fdcb4cdeba",algorithm=MD5,realm="br.wln.ims.jio.com"
+Content-Length: 0
+
+
+--end msg--
+23:16:14.255          tsx0x10fc9cd8  .Incoming Response msg 401/REGISTER/cseq=39966 (rdata0x10fc6160) in state Calling
+23:16:14.255          tsx0x10fc9cd8  ..State changed from Calling to Completed, event=RX_MSG
+23:16:14.255      tsx0x722bd4042298  ....Transaction created for Request msg REGISTER/cseq=39967 (tdta0x10fc7d18)
+23:16:14.255      tsx0x722bd4042298  ...Sending Request msg REGISTER/cseq=39967 (tdta0x10fc7d18) in state Null
+23:16:14.255             sip_util.c  ....Request msg REGISTER/cseq=39967 (tdta0x10fc7d18): skipping target resolution because address is already set
+23:16:14.255           pjsua_core.c  ....TX 1066 bytes Request msg REGISTER/cseq=39967 (tdta0x10fc7d18) to TLS 192.168.29.1:5068:
+REGISTER sip:jiofiber.local.html:5068 SIP/2.0
+Via: SIP/2.0/TLS 192.168.29.60:47465;rport;branch=z9hG4bKPjtnRrCzwXbjA6imexEzXnt0ycMKnypyO-;alias
+Route: <sip:Jiofiber.local.html:5068;transport=tls;lr>
+Max-Forwards: 70
+From: <sip:+916546317451@br.wln.ims.jio.com>;tag=hgNTmHWReRCTwxcuUt5l9xk7mqN7sNc.
+To: <sip:+916546317451@br.wln.ims.jio.com>
+Call-ID: 9Ze2FZRHwU0bGG57XRD.tRnD3KU5ss7s
+CSeq: 39967 REGISTER
+P-Access-Network-Info: GPON;PSAPId=+916546
+User-Agent: ParikaProxy/1.0
+Contact: <sip:+916546317451@192.168.29.60:47465;transport=TLS>;+sip.instance="<00000000-0000-1000-8000-000026214437>";reg-id=1;video;+sip.instance="<00000000-0000-1000-8000-000026214437>";reg-id=1;video
+Expires: 300
+Allow: PRACK, INVITE, ACK, BYE, CANCEL, UPDATE, INFO, SUBSCRIBE, NOTIFY, REFER, MESSAGE, OPTIONS
+Authorization: Digest username="916546317451@br.wln.ims.jio.com", realm="br.wln.ims.jio.com", nonce="1787334373:421ec238ca636117a86910fdcb4cdeba", uri="sip:jiofiber.local.html:5068", response="d084785ae4325eddfad93c5a785b5c36", algorithm=MD5
+Content-Length:  0
+
+
+--end msg--
+23:16:14.255         tlsc0x10fc5e68  ....Request msg REGISTER/cseq=39967 (tdta0x10fc7d18) sent successfully
+23:16:14.255      tsx0x722bd4042298  ....State changed from Null to Calling, event=TX_MSG
+23:16:14.255          tsx0x10fc9cd8  Timeout timer event
+23:16:14.255          tsx0x10fc9cd8  .State changed from Completed to Terminated, event=TIMER
+23:16:14.255          tsx0x10fc9cd8  Timeout timer event
+23:16:14.255          tsx0x10fc9cd8  .State changed from Terminated to Destroyed, event=TIMER
+23:16:14.255          tsx0x10fc9cd8  Transaction destroyed!
+23:16:14.657         sip_endpoint.c  Processing incoming message: Response msg 200/REGISTER/cseq=39967 (rdata0x10fc6160)
+23:16:14.657           pjsua_core.c  .RX 1150 bytes Response msg 200/REGISTER/cseq=39967 (rdata0x10fc6160) from TLS 192.168.29.1:5068:
+SIP/2.0 200 OK
+Via: SIP/2.0/TLS 192.168.29.60:47465;rport=47465;branch=z9hG4bKPjtnRrCzwXbjA6imexEzXnt0ycMKnypyO-;alias
+Require: outbound
+Contact: <sip:+916546317451@[2405:201:a417:e866:81ca:2b9f:486b:ab2c]:54385;pn-prid=cig9PndCQo6jF154QjWirF:APA91bHFunZNo6TIx76XReGvD6lp3rFlki3edUH3ORzlkJS_CcuSQ_RyHeCTKUvOb_Uv31ClQRUQwKuHEzwfBtJz-H_3mWDWQDMJVF87mdfRylFBXDfP58g;pn-param=com.jio.jse;pn-provider=fcm;transport=tls>;+sip.instance="<00000000-0000-1000-8000-037BFA8179D5>";reg-id=1;video;q=0.5;expires=79863;+g.3gpp.icsi-ref="urn%3Aurn-7%3A3gpp-service.ims.icsi.mmtel";+g.3gpp.iari-ref="urn%3Aurn-7%3A3gpp-application.ims.iari.rcs.jio.eucr";+g.gsma.rcs.telephony="none"
+Contact: <sip:+916546317451@192.168.29.60:47465;transport=TLS>;+sip.instance="<00000000-0000-1000-8000-000026214437>";reg-id=1;video;+sip.instance="<00000000-0000-1000-8000-000026214437>";reg-id=1;video;expires=300
+To: <sip:+916546317451@br.wln.ims.jio.com>;tag=435e8a11
+From: <sip:+916546317451@br.wln.ims.jio.com>;tag=hgNTmHWReRCTwxcuUt5l9xk7mqN7sNc.
+Call-ID: 9Ze2FZRHwU0bGG57XRD.tRnD3KU5ss7s
+CSeq: 39967 REGISTER
+User-Agent: JCOW414/JUICEJFV-1.3.32
+Content-Length: 0
+
+
+--end msg--
+23:16:14.657      tsx0x722bd4042298  .Incoming Response msg 200/REGISTER/cseq=39967 (rdata0x10fc6160) in state Calling
+23:16:14.657      tsx0x722bd4042298  ..State changed from Calling to Completed, event=RX_MSG
+23:16:14.657            pjsua_acc.c  ....SIP outbound status for acc 0 is active
+23:16:14.657            pjsua_acc.c  ....Acc 0 has SIP outbound active, no need to update registration Contact
+23:16:14.657            pjsua_acc.c  ....Service-Route updated for acc 0 with 0 URI(s)
+23:16:14.657            pjsua_acc.c  ....sip:+916546317451@br.wln.ims.jio.com: registration success, status=200 (OK), will re-register in 300 seconds
+23:16:14.658      tsx0x722bd4042298  Timeout timer event
+23:16:14.658      tsx0x722bd4042298  .State changed from Completed to Terminated, event=TIMER
+23:16:14.658      tsx0x722bd4042298  Timeout timer event
+23:16:14.658      tsx0x722bd4042298  .State changed from Terminated to Destroyed, event=TIMER
+23:16:14.658         tdta0x10fc7d18  ..Destroying txdata Request msg REGISTER/cseq=39967 (tdta0x10fc7d18)
+23:16:14.658      tsx0x722bd4042298  Transaction destroyed!
+23:16:26.619           pjsua_call.c !Making call with acc #0 to sip:08149384995@br.wln.ims.jio.com?phone-context=br.wln.ims.jio.com&user=phone
+23:16:26.619            pjsua_aud.c  .Set sound device: capture=-1, playback=-2, mode=0, use_default_settings=0
+23:16:26.619            pjsua_aud.c  ..Opening sound device (speaker + mic) PCM@16000/1/20ms
+23:16:26.619             alsa_dev.c  ...open_playback: Open playback device 'pipewire'
+23:16:26.641             alsa_dev.c  ...Opened device alsa(pipewire) for playing, sample rate=16000, ch=1, bits=16, period size=320 frames, latency=140 ms
+23:16:26.641             alsa_dev.c  ...open_capture: Open capture device 'pipewire'
+23:16:26.750             alsa_dev.c  ...Opened device alsa(pipewire) for capture, sample rate=16000, ch=1, bits=16, period size=320 frames, latency=100 ms
+23:16:26.750           ec0x116a0e40  ...Creating Speex AEC
+23:16:26.751           ec0x116a0e40  ...Speex AEC created, clock_rate=16000, channel=1, samples per frame=320, tail length=200 ms, latency=0 ms
+23:16:26.751           sound_port.c  ...Sound port uses native clock
+23:16:26.751          dlg0x116cc688  .UAC dialog created
+23:16:26.751          dlg0x116cc688  ..Session count inc to 2 by mod-pjsua
+23:16:26.751          pjsua_media.c  .Call 0: initializing media..
+23:16:26.751             alsa_dev.c !ca_thread_func(1218777): Set thread priority for audio capture thread.
+23:16:26.751             alsa_dev.c  Unable to increase thread priority, root access needed.
+23:16:26.751                  speex !warning: discarded first playback frame
+23:16:26.751                  speex  warning: discarded first playback frame
+23:16:26.751                  speex  warning: discarded first playback frame
+23:16:26.751                  speex  warning: discarded first playback frame
+23:16:26.751                  speex  warning: discarded first playback frame
+23:16:26.751                  speex  warning: discarded first playback frame
+23:16:26.751                  speex  warning: discarded first playback frame
+23:16:26.751                  speex  warning: discarded first playback frame
+23:16:26.751          pjsua_media.c !..RTP socket reachable at 192.168.29.60:4000
+23:16:26.751          pjsua_media.c  ..RTCP socket reachable at 192.168.29.60:4001
+23:16:26.751         srtp0x111bfdb0  ..SRTP keying SDES created
+23:16:26.751         srtp0x111bfdb0  ..SRTP transport created
+23:16:26.751          pjsua_media.c  ..Media index 0 selected for audio call 0
+23:16:26.751          pjsua_media.c  ..Call 0: media transport initialization complete: Success
+23:16:26.751          udp0x116ce990  ..UDP media transport created
+23:16:26.751          dlg0x116cc688  ..Session count dec to 2 by mod-pjsua
+23:16:26.751          dlg0x116cc688  .Module mod-invite added as dialog usage, data=0x116d3c98
+23:16:26.751          dlg0x116cc688  ..Session count inc to 4 by mod-invite
+23:16:26.751          dlg0x116cc688  .Module mod-100rel added as dialog usage, data=0x116d65f8
+23:16:26.751          dlg0x116cc688  .100rel module attached
+23:16:26.751          inv0x116cc688  .UAC invite session created for dialog dlg0x116cc688
+23:16:26.751             sip_util.c  .Request msg INVITE/cseq=1667 (tdta0x116d7788) created.
+23:16:26.751          inv0x116cc688  ..Sending Request msg INVITE/cseq=1667 (tdta0x116d7788)
+23:16:26.751          dlg0x116cc688  ...Sending Request msg INVITE/cseq=1667 (tdta0x116d7788)
+23:16:26.751          tsx0x116da6f8  ....Transaction created for Request msg INVITE/cseq=1667 (tdta0x116d7788)
+23:16:26.751          tsx0x116da6f8  ...Sending Request msg INVITE/cseq=1667 (tdta0x116d7788) in state Null
+23:16:26.751          sip_resolve.c  ....DNS resolver not available, target 'Jiofiber.local.html:5068' type=TLS will be resolved with getaddrinfo()
+23:16:26.755          sip_resolve.c  ....Target 'Jiofiber.local.html:5068' type=TLS resolved to '192.168.29.1:5068' type=TLS (TLS transport)
+23:16:26.755           pjsua_core.c  ....TX 1607 bytes Request msg INVITE/cseq=1667 (tdta0x116d7788) to TLS 192.168.29.1:5068:
+INVITE sip:08149384995@br.wln.ims.jio.com SIP/2.0
+Via: SIP/2.0/TLS 192.168.29.60:47465;rport;branch=z9hG4bKPjkodBFHJLTdd4vsMUP7rk3CnnZKBC4QMH;alias
+Max-Forwards: 70
+From: sip:+916546317451@br.wln.ims.jio.com;tag=rmYm0j4qeWadTddbrvd5V2tFWPP.D9FO
+To: sip:08149384995@br.wln.ims.jio.com
+Contact: <sip:+916546317451@192.168.29.60:47465;transport=TLS>;+sip.instance="<00000000-0000-1000-8000-000026214437>";reg-id=1;video
+Call-ID: ooSXFBBQwYwJltixdmHZBWjPvjrOkDs.
+CSeq: 1667 INVITE
+Route: <sip:Jiofiber.local.html:5068;transport=tls;lr>
+phone-context: br.wln.ims.jio.com
+user: phone
+Allow: PRACK, INVITE, ACK, BYE, CANCEL, UPDATE, INFO, SUBSCRIBE, NOTIFY, REFER, MESSAGE, OPTIONS
+Supported: replaces, 100rel, timer, norefersub
+Session-Expires: 1800
+Min-SE: 90
+User-Agent: ParikaProxy/1.0
+P-Preferred-Identity: <sip:+916546317451@br.wln.ims.jio.com>
+P-Access-Network-Info: GPON;PSAPId=+916546
+Supported: outbound, path, gruu, replaces, timer, norefersub, 100rel
+Allow: INVITE, ACK, CANCEL, OPTIONS, BYE, REFER, NOTIFY, UPDATE, PRACK, INFO
+Content-Type: application/sdp
+Content-Length:   498
+
+v=0
+o=Juice 1737281838294729 1737281838294729 IN IP4 192.168.29.60
+s=-
+b=AS:37
+b=RS:462
+b=RR:1387
+t=0 0
+m=audio 4000 RTP/AVP 96 97 120 121
+c=IN IP4 192.168.29.60
+a=ptime:20
+a=maxptime:240
+a=sendrecv
+a=rtpmap:96 AMR-WB/16000
+a=fmtp:96 mode-change-capability=2;max-red=0;mode-set=0,1,2,3
+a=rtpmap:97 AMR/8000
+a=fmtp:97 mode-change-capability=2;max-red=0;mode-set=0,1,2,3,4,5,6,7
+a=rtpmap:120 telephone-event/16000
+a=fmtp:120 0-15
+a=rtpmap:121 telephone-event/8000
+a=fmtp:121 0-15
+
+--end msg--
+23:16:26.756         tlsc0x10fc5e68  ....Request msg INVITE/cseq=1667 (tdta0x116d7788) sent successfully
+23:16:26.756          tsx0x116da6f8  ....State changed from Null to Calling, event=TX_MSG
+23:16:26.756          dlg0x116cc688  .....Transaction tsx0x116da6f8 state changed to Calling
+23:16:26.756          inv0x116cc688  ......State changed from NULL to CALLING, event=TSX_STATE
+23:16:26.771                  speex !warning: discarded first playback frame
+23:16:26.857         sip_endpoint.c !Processing incoming message: Response msg 100/INVITE/cseq=1667 (rdata0x10fc6160)
+23:16:26.857           pjsua_core.c  .RX 329 bytes Response msg 100/INVITE/cseq=1667 (rdata0x10fc6160) from TLS 192.168.29.1:5068:
+SIP/2.0 100 Trying
+Via: SIP/2.0/TLS 192.168.29.60:47465;rport=47465;branch=z9hG4bKPjkodBFHJLTdd4vsMUP7rk3CnnZKBC4QMH;alias
+To: sip:08149384995@br.wln.ims.jio.com
+From: sip:+916546317451@br.wln.ims.jio.com;tag=rmYm0j4qeWadTddbrvd5V2tFWPP.D9FO
+Call-ID: ooSXFBBQwYwJltixdmHZBWjPvjrOkDs.
+CSeq: 1667 INVITE
+Content-Length: 0
+
+
+--end msg--
+23:16:26.857          tsx0x116da6f8  .Incoming Response msg 100/INVITE/cseq=1667 (rdata0x10fc6160) in state Calling
+23:16:26.857          tsx0x116da6f8  ..State changed from Calling to Proceeding, event=RX_MSG
+23:16:26.857          dlg0x116cc688  ...Received Response msg 100/INVITE/cseq=1667 (rdata0x10fc6160)
+23:16:26.857          dlg0x116cc688  ...Transaction tsx0x116da6f8 state changed to Proceeding
+23:16:29.043         sip_endpoint.c  Processing incoming message: Response msg 183/INVITE/cseq=1667 (rdata0x10fc6160)
+23:16:29.043           pjsua_core.c  .RX 1225 bytes Response msg 183/INVITE/cseq=1667 (rdata0x10fc6160) from TLS 192.168.29.1:5068:
+SIP/2.0 183 Session Progress
+Via: SIP/2.0/TLS 192.168.29.60:47465;rport=47465;branch=z9hG4bKPjkodBFHJLTdd4vsMUP7rk3CnnZKBC4QMH;alias
+Require: 100rel
+Contact: <sip:08149384995@192.168.29.1:5068;transport=tls>;+sip.instance="<urn:uuid:BA8EE6CD-E875-D8EA-8D95-ED163A892983>";video;+g.3gpp.icsi-ref="urn%3Aurn-7%3A3gpp-service.ims.icsi.mmtel"
+To: <sip:08149384995@br.wln.ims.jio.com>;tag=2100ca46
+From: sip:+916546317451@br.wln.ims.jio.com;tag=rmYm0j4qeWadTddbrvd5V2tFWPP.D9FO
+Call-ID: ooSXFBBQwYwJltixdmHZBWjPvjrOkDs.
+CSeq: 1667 INVITE
+Allow: INVITE, ACK, OPTIONS, CANCEL, BYE, UPDATE, INFO, REFER, NOTIFY, MESSAGE, PRACK
+Content-Type: application/sdp
+Supported: path, replaces, timer, norefersub
+User-Agent: JCOW414/JUICEJFV-1.3.32
+RSeq: 1
+P-Asserted-Identity: <tel:+918149384995>
+P-Asserted-Identity: <sip:+918149384995@ims.mnc856.mcc405.3gppnetwork.org>
+Content-Length: 333
+
+v=0
+o=LucentIBCF 1714042899 1714042899 IN IP4 192.168.29.1
+s=-
+c=IN IP4 192.168.29.1
+t=0 0
+m=audio 49006 RTP/AVP 96 120
+b=AS:39
+b=RS:0
+b=RR:0
+a=rtpmap:96 AMR-WB/16000
+a=fmtp:96 mode-change-capability=2;max-red=0;mode-set=0,1,2,3
+a=rtpmap:120 telephone-event/16000
+a=fmtp:120 0-15
+a=sendrecv
+a=ptime:20
+a=maxptime:240
+
+--end msg--
+23:16:29.043          tsx0x116da6f8  .Incoming Response msg 183/INVITE/cseq=1667 (rdata0x10fc6160) in state Proceeding
+23:16:29.043          tsx0x116da6f8  ..State changed from Proceeding to Proceeding, event=RX_MSG
+23:16:29.043          dlg0x116cc688  ...Received Response msg 183/INVITE/cseq=1667 (rdata0x10fc6160)
+23:16:29.043           sip_dialog.c  ....Saving initial dest Jiofiber.local.html
+23:16:29.043          dlg0x116cc688  ....Route-set updated
+23:16:29.043          dlg0x116cc688  ...Transaction tsx0x116da6f8 state changed to Proceeding
+23:16:29.043          inv0x116cc688  ....State changed from CALLING to EARLY, event=TSX_STATE
+23:16:29.044          inv0x116cc688  ....Got SDP answer in Response msg 183/INVITE/cseq=1667 (rdata0x10fc6160)
+23:16:29.044          inv0x116cc688  ....SDP negotiation done: Success
+23:16:29.044           pjsua_call.c  .....Call 0: remote NAT type is 0 (Unknown)
+23:16:29.044          pjsua_media.c  .....Call 0: updating media..
+23:16:29.044          pjsua_media.c  .......Media stream call00:0 is destroyed
+23:16:29.044          udp0x116ce990  ......UDP media transport started
+23:16:29.044            pjsua_aud.c  ......Audio channel update for index 0 for call 0...
+23:16:29.044     strm0x722bd4048c78  .......VAD temporarily disabled
+23:16:29.044     strm0x722bd4048c78  .......Jitter buffer reset
+23:16:29.044                  rtp.c  .......pjmedia_rtp_session_init: ses=0x722bd404a850, default_pt=96, ssrc=0x1a7b3426
+23:16:29.044                  rtp.c  .......pjmedia_rtp_session_init2: ses=0x722bd404a850, seq=30350, ts=0, peer_ssrc=0
+23:16:29.044                  rtp.c  .......pjmedia_rtp_session_init: ses=0x722bd404ab08, default_pt=96, ssrc=0x1a7b3426
+23:16:29.044                  rtp.c  .......pjmedia_rtp_session_init2: ses=0x722bd404ab08, seq=689, ts=0, peer_ssrc=0
+23:16:29.044          udp0x116ce990  .......UDP media transport attached
+23:16:29.044               stream.c  .......Stream strm0x722bd4048c78 created
+23:16:29.044     strm0x722bd4048c78  .......Encoder stream started
+23:16:29.044     strm0x722bd4048c78  .......Decoder stream started
+23:16:29.044           conference.c  ........Add port 1 (sip:08149384995@br.wln.ims.jio.com) queued
+23:16:29.044          pjsua_media.c  ......Audio updated, stream #0: AMR-WB (sendrecv)
+23:16:29.044             sip_util.c  ....Request msg PRACK/cseq=1668 (tdta0x722bd404e7a8) created.
+23:16:29.044           sip_dialog.c  ....Setting initial dest Jiofiber.local.html
+23:16:29.044          dlg0x116cc688  .....Sending Request msg PRACK/cseq=1668 (tdta0x722bd404e7a8)
+23:16:29.044      tsx0x722bd404f7b8  ......Transaction created for Request msg PRACK/cseq=1668 (tdta0x722bd404e7a8)
+23:16:29.044      tsx0x722bd404f7b8  .....Sending Request msg PRACK/cseq=1668 (tdta0x722bd404e7a8) in state Null
+23:16:29.044          sip_resolve.c  ......Target '192.168.29.1:5068' type=TLS resolved to '192.168.29.1:5068' type=TLS (TLS transport)
+23:16:29.044           pjsua_core.c  ......TX 418 bytes Request msg PRACK/cseq=1668 (tdta0x722bd404e7a8) to TLS 192.168.29.1:5068:
+PRACK sip:08149384995@192.168.29.1:5068;transport=tls SIP/2.0
+Via: SIP/2.0/TLS 192.168.29.60:47465;rport;branch=z9hG4bKPjgJmV5zWeJncPgXOlGv1mcVkV2sWNbwux;alias
+Max-Forwards: 70
+From: sip:+916546317451@br.wln.ims.jio.com;tag=rmYm0j4qeWadTddbrvd5V2tFWPP.D9FO
+To: sip:08149384995@br.wln.ims.jio.com;tag=2100ca46
+Call-ID: ooSXFBBQwYwJltixdmHZBWjPvjrOkDs.
+CSeq: 1668 PRACK
+RAck: 1 1667 INVITE
+Content-Length:  0
+
+
+--end msg--
+23:16:29.044         tlsc0x10fc5e68  ......Request msg PRACK/cseq=1668 (tdta0x722bd404e7a8) sent successfully
+23:16:29.044      tsx0x722bd404f7b8  ......State changed from Null to Calling, event=TX_MSG
+23:16:29.044          dlg0x116cc688  .......Transaction tsx0x722bd404f7b8 state changed to Calling
+23:16:29.054           conference.c !.Added port 1 (sip:08149384995@br.wln.ims.jio.com), port count=2
+23:16:29.054     strm0x722bd4048c78  Starting talksprut..
+23:16:29.166         sip_endpoint.c !Processing incoming message: Response msg 200/PRACK/cseq=1668 (rdata0x10fc6160)
+23:16:29.166           pjsua_core.c  .RX 654 bytes Response msg 200/PRACK/cseq=1668 (rdata0x10fc6160) from TLS 192.168.29.1:5068:
+SIP/2.0 200 OK
+Via: SIP/2.0/TLS 192.168.29.60:47465;rport=47465;branch=z9hG4bKPjgJmV5zWeJncPgXOlGv1mcVkV2sWNbwux;alias
+Contact: <sip:08149384995@192.168.29.1:5068;transport=tls>;+sip.instance="<urn:uuid:BA8EE6CD-E875-D8EA-8D95-ED163A892983>"
+To: <sip:08149384995@br.wln.ims.jio.com>;tag=2100ca46
+From: sip:+916546317451@br.wln.ims.jio.com;tag=rmYm0j4qeWadTddbrvd5V2tFWPP.D9FO
+Call-ID: ooSXFBBQwYwJltixdmHZBWjPvjrOkDs.
+CSeq: 1668 PRACK
+Allow: REGISTER, INVITE, ACK, CANCEL, OPTIONS, BYE, REFER, NOTIFY, SUBSCRIBE, UPDATE, PRACK, INFO, MESSAGE
+Supported: path, replaces, timer, norefersub
+User-Agent: JCOW414/JUICEJFV-1.3.32
+Content-Length: 0
+
+
+--end msg--
+23:16:29.166      tsx0x722bd404f7b8  .Incoming Response msg 200/PRACK/cseq=1668 (rdata0x10fc6160) in state Calling
+23:16:29.166      tsx0x722bd404f7b8  ..State changed from Calling to Completed, event=RX_MSG
+23:16:29.166          dlg0x116cc688  ...Received Response msg 200/PRACK/cseq=1668 (rdata0x10fc6160)
+23:16:29.166          dlg0x116cc688  ...Transaction tsx0x722bd404f7b8 state changed to Completed
+23:16:29.166      tsx0x722bd404f7b8  Timeout timer event
+23:16:29.166      tsx0x722bd404f7b8  .State changed from Completed to Terminated, event=TIMER
+23:16:29.166          dlg0x116cc688  ..Transaction tsx0x722bd404f7b8 state changed to Terminated
+23:16:29.167      tsx0x722bd404f7b8  Timeout timer event
+23:16:29.167      tsx0x722bd404f7b8  .State changed from Terminated to Destroyed, event=TIMER
+23:16:29.167     tdta0x722bd404e7a8  ..Destroying txdata Request msg PRACK/cseq=1668 (tdta0x722bd404e7a8)
+23:16:29.167      tsx0x722bd404f7b8  Transaction destroyed!
+23:16:29.673     strm0x722bd4048c78 !VAD re-enabled
+23:16:31.176     strm0x722bd4048c78 !RTP status: badpt=0, badssrc=0, dup=0, outorder=0, probation=-1, restart=0
+23:16:31.196     strm0x722bd4048c78  RTP status: badpt=0, badssrc=0, dup=0, outorder=0, probation=-1, restart=0
+23:16:31.307         sip_endpoint.c !Processing incoming message: Response msg 180/INVITE/cseq=1667 (rdata0x10fc6160)
+23:16:31.307           pjsua_core.c  .RX 824 bytes Response msg 180/INVITE/cseq=1667 (rdata0x10fc6160) from TLS 192.168.29.1:5068:
+SIP/2.0 180 Ringing
+Via: SIP/2.0/TLS 192.168.29.60:47465;rport=47465;branch=z9hG4bKPjkodBFHJLTdd4vsMUP7rk3CnnZKBC4QMH;alias
+Contact: <sip:08149384995@192.168.29.1:5068;transport=tls>;+sip.instance="<urn:uuid:BA8EE6CD-E875-D8EA-8D95-ED163A892983>";video;+g.3gpp.icsi-ref="urn%3Aurn-7%3A3gpp-service.ims.icsi.mmtel"
+To: <sip:08149384995@br.wln.ims.jio.com>;tag=2100ca46
+From: sip:+916546317451@br.wln.ims.jio.com;tag=rmYm0j4qeWadTddbrvd5V2tFWPP.D9FO
+Call-ID: ooSXFBBQwYwJltixdmHZBWjPvjrOkDs.
+CSeq: 1667 INVITE
+Allow: INVITE, ACK, OPTIONS, CANCEL, BYE, UPDATE, INFO, REFER, NOTIFY, MESSAGE, PRACK
+Supported: path, replaces, timer, norefersub
+User-Agent: JCOW414/JUICEJFV-1.3.32
+P-Asserted-Identity: <tel:+918149384995>
+P-Asserted-Identity: <sip:+918149384995@ims.mnc856.mcc405.3gppnetwork.org>
+Content-Length: 0
+
+
+--end msg--
+23:16:31.307          tsx0x116da6f8  .Incoming Response msg 180/INVITE/cseq=1667 (rdata0x10fc6160) in state Proceeding
+23:16:31.307          tsx0x116da6f8  ..State changed from Proceeding to Proceeding, event=RX_MSG
+23:16:31.307          dlg0x116cc688  ...Received Response msg 180/INVITE/cseq=1667 (rdata0x10fc6160)
+23:16:31.307          dlg0x116cc688  ...Transaction tsx0x116da6f8 state changed to Proceeding
+23:16:31.307          inv0x116cc688  ....State changed from EARLY to EARLY, event=TSX_STATE
+23:16:31.584         sip_endpoint.c  Processing incoming message: Request msg UPDATE/cseq=2 (rdata0x10fc6160)
+23:16:31.584           pjsua_core.c  .RX 1159 bytes Request msg UPDATE/cseq=2 (rdata0x10fc6160) from TLS 192.168.29.1:5068:
+UPDATE sip:+916546317451@192.168.29.60:47465;transport=TLS SIP/2.0
+Via: SIP/2.0/TLS 192.168.29.1:5068;branch=z9hG4bK-524287-1---49a96c0d9a0ee85f;rport
+Max-Forwards: 70
+Contact: <sip:08149384995@192.168.29.1:5068;transport=tls>;+sip.instance="<urn:uuid:BA8EE6CD-E875-D8EA-8D95-ED163A892983>";video;+g.3gpp.icsi-ref="urn%3Aurn-7%3A3gpp-service.ims.icsi.mmtel"
+To: sip:+916546317451@br.wln.ims.jio.com;tag=rmYm0j4qeWadTddbrvd5V2tFWPP.D9FO
+From: <sip:08149384995@br.wln.ims.jio.com>;tag=2100ca46
+Call-ID: ooSXFBBQwYwJltixdmHZBWjPvjrOkDs.
+CSeq: 2 UPDATE
+Allow: REGISTER, INVITE, ACK, CANCEL, OPTIONS, BYE, REFER, NOTIFY, SUBSCRIBE, UPDATE, PRACK, INFO, MESSAGE
+Content-Type: application/sdp
+Supported: path, replaces, timer, norefersub
+User-Agent: JCOW414/JUICEJFV-1.3.32
+Content-Length: 357
+
+v=0
+o=LucentIBCF 1714042899 1714042900 IN IP4 192.168.29.1
+s=-
+b=AS:39
+t=0 0
+m=audio 49006 RTP/AVP 96 120
+c=IN IP4 192.168.29.1
+b=AS:39
+b=RR:1388
+b=RS:462
+a=rtpmap:96 AMR-WB/16000
+a=fmtp:96 mode-set=0,1,2,3;mode-change-capability=2;max-red=0
+a=rtpmap:120 telephone-event/16000
+a=sendrecv
+a=ptime:20
+a=maxptime:80
+a=rtcp-xr
+a=fmtp:120 0-15
+
+--end msg--
+23:16:31.584          dlg0x116cc688  .Received Request msg UPDATE/cseq=2 (rdata0x10fc6160)
+23:16:31.584      tsx0x722bd404f1b8  ...Transaction created for Request msg UPDATE/cseq=2 (rdata0x10fc6160)
+23:16:31.584      tsx0x722bd404f1b8  ..Incoming Request msg UPDATE/cseq=2 (rdata0x10fc6160) in state Null
+23:16:31.584      tsx0x722bd404f1b8  ...State changed from Null to Trying, event=RX_MSG
+23:16:31.584          dlg0x116cc688  ....Transaction tsx0x722bd404f1b8 state changed to Trying
+23:16:31.584          inv0x116cc688  .....Got SDP offer in Request msg UPDATE/cseq=2 (rdata0x10fc6160)
+23:16:31.584           pjsua_call.c  .....Call 0: received updated media offer
+23:16:31.585          inv0x116cc688  .....SDP negotiation done: Success
+23:16:31.585           pjsua_call.c  ......Call 0: remote NAT type is 0 (Unknown)
+23:16:31.585          pjsua_media.c  ......Call 0: updating media..
+23:16:31.585           conference.c  .........Remove port 1 requested
+23:16:31.585           conference.c  .........Remove port 1 queued
+23:16:31.585     strm0x722bd4048c78  ........Stream destroying
+23:16:31.585          udp0x116ce990  ........UDP media transport detached
+23:16:31.585          pjsua_media.c  ........Media stream call00:0 is destroyed
+23:16:31.585          udp0x116ce990  .......UDP media transport started
+23:16:31.585            pjsua_aud.c  .......Audio channel update for index 0 for call 0...
+23:16:31.585     strm0x722bd4057b58  ........VAD temporarily disabled
+23:16:31.585     strm0x722bd4057b58  ........Jitter buffer reset
+23:16:31.585                  rtp.c  ........pjmedia_rtp_session_init: ses=0x722bd4059730, default_pt=96, ssrc=0x1a7b3426
+23:16:31.585                  rtp.c  ........pjmedia_rtp_session_init2: ses=0x722bd4059730, seq=816, ts=40640, peer_ssrc=0
+23:16:31.585                  rtp.c  ........pjmedia_rtp_session_init: ses=0x722bd40599e8, default_pt=96, ssrc=0x1a7b3426
+23:16:31.585                  rtp.c  ........pjmedia_rtp_session_init2: ses=0x722bd40599e8, seq=816, ts=40640, peer_ssrc=0
+23:16:31.585          udp0x116ce990  ........UDP media transport attached
+23:16:31.585               stream.c  ........Stream strm0x722bd4057b58 created
+23:16:31.585     strm0x722bd4057b58  ........Encoder stream started
+23:16:31.585     strm0x722bd4057b58  ........Decoder stream started
+23:16:31.585           conference.c  .........Add port 2 (sip:08149384995@br.wln.ims.jio.com) queued
+23:16:31.585          pjsua_media.c  .......Audio updated, stream #0: AMR-WB (sendrecv)
+23:16:31.585             sip_util.c  .....Response msg 200/UPDATE/cseq=2 (tdta0x722bd405f1e8) created
+23:16:31.585          dlg0x116cc688  ......Sending Response msg 200/UPDATE/cseq=2 (tdta0x722bd405f1e8)
+23:16:31.585           sip_dialog.c  ......Setting initial dest Jiofiber.local.html
+23:16:31.585      tsx0x722bd404f1b8  ......Sending Response msg 200/UPDATE/cseq=2 (tdta0x722bd405f1e8) in state Trying
+23:16:31.585           pjsua_core.c  .......TX 1020 bytes Response msg 200/UPDATE/cseq=2 (tdta0x722bd405f1e8) to TLS 192.168.29.1:5068:
+SIP/2.0 200 OK
+Via: SIP/2.0/TLS 192.168.29.1:5068;rport=5068;received=192.168.29.1;branch=z9hG4bK-524287-1---49a96c0d9a0ee85f
+Call-ID: ooSXFBBQwYwJltixdmHZBWjPvjrOkDs.
+From: <sip:08149384995@br.wln.ims.jio.com>;tag=2100ca46
+To: <sip:+916546317451@br.wln.ims.jio.com>;tag=rmYm0j4qeWadTddbrvd5V2tFWPP.D9FO
+CSeq: 2 UPDATE
+Contact: <sip:+916546317451@192.168.29.60:47465;transport=TLS>;+sip.instance="<00000000-0000-1000-8000-000026214437>";reg-id=1;video
+Allow: PRACK, INVITE, ACK, BYE, CANCEL, UPDATE, INFO, SUBSCRIBE, NOTIFY, REFER, MESSAGE, OPTIONS
+Supported: replaces, 100rel, timer, norefersub, trickle-ice
+Content-Type: application/sdp
+Content-Length:   346
+
+v=0
+o=Juice 1737281838294729 1737281838294730 IN IP4 192.168.29.60
+s=-
+b=AS:37
+b=RS:462
+b=RR:1387
+t=0 0
+m=audio 4000 RTP/AVP 96 120
+c=IN IP4 192.168.29.60
+a=ptime:20
+a=maxptime:240
+a=sendrecv
+a=rtpmap:96 AMR-WB/16000
+a=fmtp:96 mode-change-capability=2;max-red=0;mode-set=0,1,2,3
+a=rtpmap:120 telephone-event/16000
+a=fmtp:120 0-15
+
+--end msg--
+23:16:31.585         tlsc0x10fc5e68  .......Response msg 200/UPDATE/cseq=2 (tdta0x722bd405f1e8) sent successfully
+23:16:31.585      tsx0x722bd404f1b8  .......State changed from Trying to Completed, event=TX_MSG
+23:16:31.585          dlg0x116cc688  ........Transaction tsx0x722bd404f1b8 state changed to Completed
+23:16:31.585      tsx0x722bd404f1b8  Timeout timer event
+23:16:31.585      tsx0x722bd404f1b8  .State changed from Completed to Terminated, event=TIMER
+23:16:31.585          dlg0x116cc688  ..Transaction tsx0x722bd404f1b8 state changed to Terminated
+23:16:31.585      tsx0x722bd404f1b8  Timeout timer event
+23:16:31.585      tsx0x722bd404f1b8  .State changed from Terminated to Destroyed, event=TIMER
+23:16:31.585     tdta0x722bd405f1e8  ..Destroying txdata Response msg 200/UPDATE/cseq=2 (tdta0x722bd405f1e8)
+23:16:31.585      tsx0x722bd404f1b8  Transaction destroyed!
+23:16:31.593           conference.c !.Stop any transmission to port 1 (sip:08149384995@br.wln.ims.jio.com)
+23:16:31.593           conference.c  .Stop any transmission from port 1 (sip:08149384995@br.wln.ims.jio.com)
+23:16:31.593           conference.c  .Removed port 1 (sip:08149384995@br.wln.ims.jio.com), port count=1
+23:16:31.593     strm0x722bd4048c78  .JB summary:
+  size=21/eff=21 prefetch=0 level=0
+  delay (min/max/avg/dev)=0/0/0/0 ms
+  burst (min/max/avg/dev)=0/0/0/0 frames
+  lost=0 discard=0 empty=0
+23:16:31.593     strm0x722bd4048c78  .Stream destroyed
+23:16:31.593           conference.c  .Added port 2 (sip:08149384995@br.wln.ims.jio.com), port count=2
+23:16:31.593     strm0x722bd4057b58  Starting talksprut..
+23:16:31.596     strm0x722bd4057b58 !RTP status: badpt=0, badssrc=0, dup=0, outorder=0, probation=-1, restart=0
+23:16:31.614           sound_port.c !EC suspended because of inactivity
+23:16:31.617     strm0x722bd4057b58 !RTP status: badpt=0, badssrc=0, dup=0, outorder=0, probation=-1, restart=0
+23:16:32.211     strm0x722bd4057b58 !VAD re-enabled
+23:16:42.686         sip_endpoint.c !Processing incoming message: Request msg UPDATE/cseq=3 (rdata0x10fc6160)
+23:16:42.686           pjsua_core.c  .RX 1390 bytes Request msg UPDATE/cseq=3 (rdata0x10fc6160) from TLS 192.168.29.1:5068:
+UPDATE sip:+916546317451@192.168.29.60:47465;transport=TLS SIP/2.0
+Via: SIP/2.0/TLS 192.168.29.1:5068;branch=z9hG4bK-524287-1---d11a4a6c2b38ae22;rport
+Max-Forwards: 70
+Contact: <sip:08149384995@192.168.29.1:5068;transport=tls>;+sip.instance="<urn:uuid:BA8EE6CD-E875-D8EA-8D95-ED163A892983>";video;+g.3gpp.icsi-ref="urn%3Aurn-7%3A3gpp-service.ims.icsi.mmtel"
+To: sip:+916546317451@br.wln.ims.jio.com;tag=rmYm0j4qeWadTddbrvd5V2tFWPP.D9FO
+From: <sip:08149384995@br.wln.ims.jio.com>;tag=2100ca46
+Call-ID: ooSXFBBQwYwJltixdmHZBWjPvjrOkDs.
+CSeq: 3 UPDATE
+Allow: REGISTER, INVITE, ACK, CANCEL, OPTIONS, BYE, REFER, NOTIFY, SUBSCRIBE, UPDATE, PRACK, INFO, MESSAGE
+Content-Type: application/sdp
+Supported: path, replaces, timer, norefersub
+User-Agent: JCOW414/JUICEJFV-1.3.32
+P-NokiaSiemens.Session-Info: bearer=yes; corrID=17140849447146319140266775307840; <sip:+918149384995@ims.mnc856.mcc405.3gppnetwork.org>;instance-id-term="urn:gsma:imei:35426793-313812-0";impi-term="impi:405856174747576@ims.mnc856.mcc405.3gppnetwork.org"
+Content-Length: 333
+
+v=0
+o=LucentIBCF 1714042899 1714042901 IN IP4 192.168.29.1
+s=-
+c=IN IP4 192.168.29.1
+t=0 0
+m=audio 49006 RTP/AVP 96 120
+b=AS:39
+b=RS:0
+b=RR:0
+a=rtpmap:96 AMR-WB/16000
+a=fmtp:96 mode-change-capability=2;max-red=0;mode-set=0,1,2,3
+a=rtpmap:120 telephone-event/16000
+a=fmtp:120 0-15
+a=sendrecv
+a=ptime:20
+a=maxptime:240
+
+--end msg--
+23:16:42.686          dlg0x116cc688  .Received Request msg UPDATE/cseq=3 (rdata0x10fc6160)
+23:16:42.686      tsx0x722bd404f1b8  ...Transaction created for Request msg UPDATE/cseq=3 (rdata0x10fc6160)
+23:16:42.686      tsx0x722bd404f1b8  ..Incoming Request msg UPDATE/cseq=3 (rdata0x10fc6160) in state Null
+23:16:42.686      tsx0x722bd404f1b8  ...State changed from Null to Trying, event=RX_MSG
+23:16:42.686          dlg0x116cc688  ....Transaction tsx0x722bd404f1b8 state changed to Trying
+23:16:42.687          inv0x116cc688  .....Got SDP offer in Request msg UPDATE/cseq=3 (rdata0x10fc6160)
+23:16:42.687           pjsua_call.c  .....Call 0: received updated media offer
+23:16:42.687          inv0x116cc688  .....SDP negotiation done: Success
+23:16:42.687           pjsua_call.c  ......Call 0: remote NAT type is 0 (Unknown)
+23:16:42.687          pjsua_media.c  ......Call 0: updating media..
+23:16:42.687           conference.c  .........Remove port 2 requested
+23:16:42.687           conference.c  .........Remove port 2 queued
+23:16:42.687     strm0x722bd4057b58  ........Stream destroying
+23:16:42.687          udp0x116ce990  ........UDP media transport detached
+23:16:42.687          pjsua_media.c  ........Media stream call00:0 is destroyed
+23:16:42.687          udp0x116ce990  .......UDP media transport started
+23:16:42.687            pjsua_aud.c  .......Audio channel update for index 0 for call 0...
+23:16:42.687     strm0x722bd403d208  ........VAD temporarily disabled
+23:16:42.687     strm0x722bd403d208  ........Jitter buffer reset
+23:16:42.687                  rtp.c  ........pjmedia_rtp_session_init: ses=0x722bd403ede0, default_pt=96, ssrc=0x1a7b3426
+23:16:42.687                  rtp.c  ........pjmedia_rtp_session_init2: ses=0x722bd403ede0, seq=1371, ts=218240, peer_ssrc=0
+23:16:42.687                  rtp.c  ........pjmedia_rtp_session_init: ses=0x722bd403f098, default_pt=96, ssrc=0x1a7b3426
+23:16:42.687                  rtp.c  ........pjmedia_rtp_session_init2: ses=0x722bd403f098, seq=1371, ts=218240, peer_ssrc=0
+23:16:42.687          udp0x116ce990  ........UDP media transport attached
+23:16:42.687               stream.c  ........Stream strm0x722bd403d208 created
+23:16:42.687     strm0x722bd403d208  ........Encoder stream started
+23:16:42.687     strm0x722bd403d208  ........Decoder stream started
+23:16:42.687           conference.c  .........Add port 1 (sip:08149384995@br.wln.ims.jio.com) queued
+23:16:42.687          pjsua_media.c  .......Audio updated, stream #0: AMR-WB (sendrecv)
+23:16:42.687             sip_util.c  .....Response msg 200/UPDATE/cseq=3 (tdta0x722bd4064cd8) created
+23:16:42.687          dlg0x116cc688  ......Sending Response msg 200/UPDATE/cseq=3 (tdta0x722bd4064cd8)
+23:16:42.687           sip_dialog.c  ......Setting initial dest Jiofiber.local.html
+23:16:42.687      tsx0x722bd404f1b8  ......Sending Response msg 200/UPDATE/cseq=3 (tdta0x722bd4064cd8) in state Trying
+23:16:42.687           pjsua_core.c  .......TX 1020 bytes Response msg 200/UPDATE/cseq=3 (tdta0x722bd4064cd8) to TLS 192.168.29.1:5068:
+SIP/2.0 200 OK
+Via: SIP/2.0/TLS 192.168.29.1:5068;rport=5068;received=192.168.29.1;branch=z9hG4bK-524287-1---d11a4a6c2b38ae22
+Call-ID: ooSXFBBQwYwJltixdmHZBWjPvjrOkDs.
+From: <sip:08149384995@br.wln.ims.jio.com>;tag=2100ca46
+To: <sip:+916546317451@br.wln.ims.jio.com>;tag=rmYm0j4qeWadTddbrvd5V2tFWPP.D9FO
+CSeq: 3 UPDATE
+Contact: <sip:+916546317451@192.168.29.60:47465;transport=TLS>;+sip.instance="<00000000-0000-1000-8000-000026214437>";reg-id=1;video
+Allow: PRACK, INVITE, ACK, BYE, CANCEL, UPDATE, INFO, SUBSCRIBE, NOTIFY, REFER, MESSAGE, OPTIONS
+Supported: replaces, 100rel, timer, norefersub, trickle-ice
+Content-Type: application/sdp
+Content-Length:   346
+
+v=0
+o=Juice 1737281838294729 1737281838294730 IN IP4 192.168.29.60
+s=-
+b=AS:37
+b=RS:462
+b=RR:1387
+t=0 0
+m=audio 4000 RTP/AVP 96 120
+c=IN IP4 192.168.29.60
+a=ptime:20
+a=maxptime:240
+a=sendrecv
+a=rtpmap:96 AMR-WB/16000
+a=fmtp:96 mode-change-capability=2;max-red=0;mode-set=0,1,2,3
+a=rtpmap:120 telephone-event/16000
+a=fmtp:120 0-15
+
+--end msg--
+23:16:42.688         tlsc0x10fc5e68  .......Response msg 200/UPDATE/cseq=3 (tdta0x722bd4064cd8) sent successfully
+23:16:42.688      tsx0x722bd404f1b8  .......State changed from Trying to Completed, event=TX_MSG
+23:16:42.688          dlg0x116cc688  ........Transaction tsx0x722bd404f1b8 state changed to Completed
+23:16:42.688      tsx0x722bd404f1b8  Timeout timer event
+23:16:42.688      tsx0x722bd404f1b8  .State changed from Completed to Terminated, event=TIMER
+23:16:42.688          dlg0x116cc688  ..Transaction tsx0x722bd404f1b8 state changed to Terminated
+23:16:42.688      tsx0x722bd404f1b8  Timeout timer event
+23:16:42.688      tsx0x722bd404f1b8  .State changed from Terminated to Destroyed, event=TIMER
+23:16:42.688     tdta0x722bd4064cd8  ..Destroying txdata Response msg 200/UPDATE/cseq=3 (tdta0x722bd4064cd8)
+23:16:42.688      tsx0x722bd404f1b8  Transaction destroyed!
+23:16:42.697           conference.c !.Stop any transmission to port 2 (sip:08149384995@br.wln.ims.jio.com)
+23:16:42.697           conference.c  .Stop any transmission from port 2 (sip:08149384995@br.wln.ims.jio.com)
+23:16:42.697           conference.c  .Removed port 2 (sip:08149384995@br.wln.ims.jio.com), port count=1
+23:16:42.697     strm0x722bd4057b58  .JB summary:
+  size=25/eff=25 prefetch=0 level=0
+  delay (min/max/avg/dev)=0/0/0/0 ms
+  burst (min/max/avg/dev)=0/0/0/0 frames
+  lost=0 discard=523 empty=0
+23:16:42.697     strm0x722bd4057b58  .Stream destroyed
+23:16:42.697           conference.c  .Added port 1 (sip:08149384995@br.wln.ims.jio.com), port count=2
+23:16:42.697     strm0x722bd403d208  Starting talksprut..
+23:16:42.858     strm0x722bd403d208 !RTP status: badpt=0, badssrc=0, dup=0, outorder=0, probation=-1, restart=0
+23:16:42.858     strm0x722bd403d208  RTP status: badpt=0, bad

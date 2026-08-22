@@ -24,6 +24,8 @@ PYTHON_PACKAGES = [
     "setuptools>=84.0.0",
     "requests>=2.32.0",
     "urllib3>=2.5.0",
+    "PySide6>=6.7.0",
+    "python-dotenv>=1.0.0",
 ]
 
 SYSTEM_PACKAGES = {
@@ -40,6 +42,7 @@ SYSTEM_PACKAGES = {
     "libopencore-amrwb-dev": [],
     "libvo-amrwbenc-dev": [],
     "patchelf": ["patchelf"],
+    "qt6-base-dev": ["qmake6", "qt6-qmake"],
 }
 
 
@@ -498,6 +501,26 @@ def verify_pjsua2(venv_python: Path) -> None:
     print(f"PJSUA2 version: {version}")
 
 
+def run_application(venv_python: Path) -> None:
+    """Run the JioSip desktop application."""
+    print_step("Starting JioSip application")
+
+    library_path = build_runtime_library_path()
+
+    environment = os.environ.copy()
+    environment["LD_LIBRARY_PATH"] = (
+        library_path
+        + (":" + environment["LD_LIBRARY_PATH"] if environment.get("LD_LIBRARY_PATH") else "")
+    )
+
+    # Run the application module
+    subprocess.run(
+        [str(venv_python), "-m", "app"],
+        env=environment,
+        cwd=PROJECT_ROOT,
+    )
+
+
 def main() -> None:
     require_linux()
 
@@ -534,6 +557,11 @@ def main() -> None:
     print(f"Python environment: {VENV_DIR}")
     print(f"JFC PJSIP: {JFC_BRANCH}")
     print("PJSUA2 is ready.")
+
+    # Ask if user wants to run the application
+    answer = input("\nRun JioSip application now? [Y/n]: ").strip().lower()
+    if answer in ("", "y", "yes"):
+        run_application(venv_python)
 
 
 if __name__ == "__main__":

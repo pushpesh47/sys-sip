@@ -1,0 +1,12 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=SysSIP
+GenericName=SIP/VoIP Dialer
+Comment=A generic SIP/VoIP calling application with Jio Fiber as the default provider
+Exec=/mnt/dev/python/jio-fiber-sip/.venv/bin/python /mnt/dev/python/jio-fiber-sip/run.py
+Icon=/mnt/dev/python/jio-fiber-sip/app/assets/logo/sys-sip-small.png
+Terminal=false
+Categories=Network;Telephony;
+StartupWMClass=SysSIP
+StartupNotify=true
