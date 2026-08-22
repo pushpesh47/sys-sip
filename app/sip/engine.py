@@ -144,6 +144,8 @@ class SipEngine:
             ep_config.logConfig.level = 5
             ep_config.logConfig.consoleLevel = 5
             ep_config.medConfig.ptime = 20
+            ep_config.medConfig.ecOptions = 1
+            ep_config.medConfig.ecTailLen = 200
             ep_config.medConfig.audioFramePtime = 20
 
             self._set_state(RegistrationState.INITIALIZING, "Initializing PJSUA2 library")
@@ -739,26 +741,34 @@ class _SipCallCallback(pjsua2.Call):
 
     def onCallMediaState(self, prm: pjsua2.OnCallMediaStateParam) -> None:
         """Handle call media state changes."""
-        info = self.getInfo()
-        
-        # Connect audio media when call is confirmed
-        if info.state == pjsua2.PJSIP_INV_STATE_CONFIRMED:
-            try:
-                call_media = self.getMedia(0)
-                if call_media:
-                    call_media = pjsua2.AudioMedia.typecastFromMedia(call_media)
-                    # Connect to sound device
-                    endpoint = self._engine._endpoint
-                    if endpoint:
-                        aud_dev_mgr = endpoint.audDevManager()
-                        # Connect microphone to call
-                        aud_dev_mgr.getCaptureDevMedia().startTransmit(call_media)
-                        # Connect call to speaker
-                        call_media.startTransmit(aud_dev_mgr.getPlaybackDevMedia())
-                        # Track that media is connected for this call
-                        self._engine._call_media_connected[self.getId()] = True
-            except Exception:
-                pass
+        try:
+            call_info = self.getInfo()
+            endpoint = self._engine._endpoint
+
+            if not endpoint:
+                return
+
+            for media_index, media in enumerate(call_info.media):
+                if media.type != pjsua2.PJMEDIA_TYPE_AUDIO:
+                    continue
+
+                if media.status != pjsua2.PJSUA_CALL_MEDIA_ACTIVE:
+                    continue
+
+                audio_media = self.getAudioMedia(media_index)
+
+                capture_device = endpoint.audDevManager().getCaptureDevMedia()
+                playback_device = endpoint.audDevManager().getPlaybackDevMedia()
+
+                audio_media.startTransmit(playback_device)
+                capture_device.startTransmit(audio_media)
+
+                self._engine._call_media_connected[self.getId()] = True
+
+                print(f"[CALL] Audio media connected for call {self.getId()}.", flush=True)
+
+        except Exception as e:
+            print(f"[CALL] Audio media setup failed: {e}", flush=True)
 
     def onCallSdpCreated(self, prm: pjsua2.OnCallSdpCreatedParam) -> None:
         """Modify SDP for outgoing calls - match the working test implementation."""
