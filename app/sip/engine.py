@@ -220,6 +220,10 @@ class SipEngine:
             codec_fmtp3.name = "mode-set"
             codec_fmtp3.val = "0,1,2,3"
             codec_param.setting.decFmtp.append(codec_fmtp3)
+            codec_fmtp4 = pjsua2.CodecFmtp()
+            codec_fmtp4.name = "octet-align"
+            codec_fmtp4.val = "1"
+            codec_param.setting.decFmtp.append(codec_fmtp4)
             self._endpoint.codecSetParam("AMR-WB/16000", codec_param)
         except Exception:
             pass
@@ -584,7 +588,9 @@ class SipEngine:
                 return
 
             try:
-                call.answer(pjsua2.CallOpParam(True))
+                call_parameters = pjsua2.CallOpParam()
+                call_parameters.statusCode = 200
+                call.answer(call_parameters)
             except Exception:
                 pass
 
@@ -756,7 +762,7 @@ class _SipCallCallback(pjsua2.Call):
             pjsua2.PJSIP_INV_STATE_NULL: CallState.IDLE,
             pjsua2.PJSIP_INV_STATE_CALLING: CallState.CALLING,
             pjsua2.PJSIP_INV_STATE_INCOMING: CallState.RINGING,
-            pjsua2.PJSIP_INV_STATE_EARLY: CallState.CONNECTING,
+            pjsua2.PJSIP_INV_STATE_EARLY: CallState.RINGING,
             pjsua2.PJSIP_INV_STATE_CONNECTING: CallState.CONNECTING,
             pjsua2.PJSIP_INV_STATE_CONFIRMED: CallState.CONNECTED,
             pjsua2.PJSIP_INV_STATE_DISCONNECTED: CallState.DISCONNECTED,
@@ -823,7 +829,40 @@ class _SipCallCallback(pjsua2.Call):
             print(f"[CALL] Audio media setup failed: {e}", flush=True)
 
     def onCallSdpCreated(self, prm: pjsua2.OnCallSdpCreatedParam) -> None:
-        """Modify SDP for outgoing calls - match the working test implementation."""
+        """Modify SDP for outgoing calls - match the working test implementation.
+        
+        For incoming calls (answer), remSdp will be populated with the remote offer.
+        For outgoing calls (offer), remSdp will be empty.
+        We only apply the Jio-specific SDP transformations for outgoing calls.
+        """
+        # Check if this is an incoming call answer (remSdp is populated)
+        # or outgoing call offer (remSdp is empty)
+        is_incoming_answer = prm.remSdp and prm.remSdp.wholeSdp
+        
+        if is_incoming_answer:
+            # For incoming calls, let PJSUA2 generate the proper answer SDP
+            # based on the remote offer and our configured codec capabilities.
+            # Only apply minimal fixups:
+            # 1. Fix telephone-event fmtp: 0-16 -> 0-15 (Jio requirement)
+            # 2. Remove any malformed fmtp lines (missing PT prefix) as safety net
+            sdp = prm.sdp.wholeSdp
+            lines = sdp.splitlines()
+            new_lines = []
+            
+            for line in lines:
+                # Skip malformed fmtp lines (a=fmtp: without PT prefix)
+                if line.startswith("a=fmtp:") and not line[7:].lstrip()[:1].isdigit():
+                    continue
+                # Fix telephone-event fmtp: 0-16 -> 0-15 (Jio requirement)
+                if line.startswith("a=fmtp:") and "0-16" in line:
+                    line = line.replace("0-16", "0-15")
+                new_lines.append(line)
+            
+            final_sdp = "\r\n".join(new_lines) + "\r\n"
+            prm.sdp.wholeSdp = final_sdp
+            return
+        
+        # Outgoing call offer - apply full Jio-specific SDP transformation
         sdp = prm.sdp.wholeSdp
         lines = sdp.splitlines()
         new_lines = []

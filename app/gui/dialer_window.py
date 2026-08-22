@@ -700,11 +700,11 @@ class DialerWindow(QMainWindow):
         # Update bottom status bar
         if hasattr(self, 'status_message_label'):
             if state == CallState.IDLE:
-                self.status_message_label.setText("Ready")
+                self.status_message_label.setText("Idle")
             elif state == CallState.CALLING:
                 self.status_message_label.setText(f"Calling {reason}...")
             elif state == CallState.RINGING:
-                self.status_message_label.setText(f"Ringing {reason}...")
+                self.status_message_label.setText("Ringing...")
             elif state == CallState.CONNECTING:
                 self.status_message_label.setText(f"Connecting {reason}...")
             elif state == CallState.CONNECTED:
@@ -712,9 +712,9 @@ class DialerWindow(QMainWindow):
             elif state == CallState.DISCONNECTING:
                 self.status_message_label.setText("Disconnecting...")
             elif state == CallState.DISCONNECTED:
-                self.status_message_label.setText("Call Ended")
+                self.status_message_label.setText("Idle")
             elif state == CallState.FAILED:
-                self.status_message_label.setText(f"Call Failed: {reason}")
+                self.status_message_label.setText("Idle")
 
         # Manage button states and call duration
         if state == CallState.IDLE:
@@ -770,14 +770,37 @@ class DialerWindow(QMainWindow):
             self._call_duration_timer.stop()
             self._call_start_time = QTime(0, 0)
             self.call_duration_label.setText("00:00")
+            self._mic_muted = False
+            self.mic_button.setText("🎤 MIC ON")
+            self.mic_button.setStyleSheet("""
+                QPushButton {
+                    background-color: #e8f5e9;
+                    color: #2e7d32;
+                    border: 1px solid #a5d6a7;
+                    border-radius: 6px;
+                    font-size: 14px;
+                    font-weight: 600;
+                    padding: 0 20px;
+                }
+                QPushButton:hover {
+                    background-color: #c8e6c9;
+                    border-color: #81c784;
+                }
+                QPushButton:pressed {
+                    background-color: #a5d6a7;
+                }
+            """)
         elif state == CallState.FAILED:
+            if hasattr(self, '_incoming_call_dialog') and self._incoming_call_dialog:
+                self._incoming_call_dialog.close()
+                self._incoming_call_dialog = None
             self.call_button.setEnabled(True)
             self.hangup_button.setEnabled(False)
             self.number_input.setEnabled(True)
             self.active_call_frame.setVisible(False)
             self._call_duration_timer.stop()
-            if state == CallState.FAILED:
-                QMessageBox.warning(self, "Call Failed", reason or "Call failed")
+            # if state == CallState.FAILED:
+            #     QMessageBox.warning(self, "Call Failed", reason or "Call failed")
 
     def _update_call_duration(self) -> None:
         """Update call duration display."""
