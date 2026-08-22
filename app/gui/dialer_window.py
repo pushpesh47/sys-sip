@@ -687,7 +687,13 @@ class DialerWindow(QMainWindow):
         elif state == CallState.CONNECTED:
             self.call_status_indicator.set_color("#4caf50")
             self.call_status_label.setText("Connected")
-        elif state in (CallState.DISCONNECTING, CallState.DISCONNECTED, CallState.FAILED):
+        elif state == CallState.DISCONNECTING:
+            self.call_status_indicator.set_color("#ff9800")
+            self.call_status_label.setText("Disconnecting...")
+        elif state == CallState.DISCONNECTED:
+            self.call_status_indicator.set_color("#9e9e9e")
+            self.call_status_label.setText("Idle")
+        elif state == CallState.FAILED:
             self.call_status_indicator.set_color("#9e9e9e")
             self.call_status_label.setText("Idle")
 
@@ -751,7 +757,20 @@ class DialerWindow(QMainWindow):
             self.active_call_frame.setVisible(True)
             self._call_start_time = QTime.currentTime()
             self._call_duration_timer.start()
-        elif state in (CallState.DISCONNECTING, CallState.DISCONNECTED, CallState.FAILED):
+        elif state == CallState.DISCONNECTING:
+            self.call_button.setEnabled(False)
+            self.hangup_button.setEnabled(False)
+            self.number_input.setEnabled(False)
+            self.active_call_frame.setVisible(True)
+        elif state == CallState.DISCONNECTED:
+            self.call_button.setEnabled(True)
+            self.hangup_button.setEnabled(False)
+            self.number_input.setEnabled(True)
+            self.active_call_frame.setVisible(False)
+            self._call_duration_timer.stop()
+            self._call_start_time = QTime(0, 0)
+            self.call_duration_label.setText("00:00")
+        elif state == CallState.FAILED:
             self.call_button.setEnabled(True)
             self.hangup_button.setEnabled(False)
             self.number_input.setEnabled(True)
@@ -832,7 +851,9 @@ class DialerWindow(QMainWindow):
     def _on_hangup_clicked(self) -> None:
         """Handle HANG UP button click."""
         if self._current_call_id >= 0:
-            self._service.engine.hangup_call(self._current_call_id)
+            success = self._service.engine.hangup_call(self._current_call_id)
+            if success:
+                self._update_call_ui(CallState.DISCONNECTED, "Call Ended")
 
     def _show_sip_accounts(self) -> None:
         """Show SIP Accounts management window."""

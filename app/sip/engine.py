@@ -1,5 +1,6 @@
 """SIP Engine - PJSUA2 integration layer."""
 
+import queue
 import threading
 from enum import Enum
 from typing import Any, Callable, Optional
@@ -55,6 +56,8 @@ class SipEngine:
         self._account_lock = threading.Lock()
         self._calls: dict[int, pjsua2.Call] = {}
         self._call_media_connected: dict[int, bool] = {}  # Track media connection state
+        self._calls_disconnecting: set[int] = set()  # Track calls pending termination
+        self._pending_commands: queue.Queue[tuple[str, tuple, dict]] = queue.Queue()
 
     @property
     def registration_state(self) -> RegistrationState:
@@ -392,19 +395,19 @@ class SipEngine:
             call_id: Call ID to hang up.
 
         Returns:
-            True if hangup was initiated, False on error.
+            True if hangup was queued, False on error.
         """
         with self._account_lock:
             call = self._calls.get(call_id)
             if not call:
                 return False
 
-            try:
-                call.hangup(pjsua2.CallOpParam(True))
-                # Don't remove call here - let the callback handle it when DISCONNECTED
-                return True
-            except Exception:
-                return False
+        # Queue the hangup command for execution on the PJSUA2 event thread.
+        # This avoids cross-thread access to the SWIG Call proxy object,
+        # which causes native crashes when the Qt thread calls hangup()
+        # while the event thread processes the DISCONNECTED callback.
+        self._pending_commands.put(("hangup", (call_id,), {}))
+        return True
 
     def answer_call(self, call_id: int) -> bool:
         """
@@ -414,18 +417,17 @@ class SipEngine:
             call_id: Call ID to answer.
 
         Returns:
-            True if answer was sent, False on error.
+            True if answer was queued, False on error.
         """
         with self._account_lock:
             call = self._calls.get(call_id)
             if not call:
                 return False
 
-            try:
-                call.answer(pjsua2.CallOpParam(True))
-                return True
-            except Exception:
-                return False
+        # Queue the answer command for execution on the PJSUA2 event thread.
+        # This avoids cross-thread access to the SWIG Call proxy object.
+        self._pending_commands.put(("answer", (call_id,), {}))
+        return True
 
     def reject_call(self, call_id: int) -> bool:
         """
@@ -435,18 +437,17 @@ class SipEngine:
             call_id: Call ID to reject.
 
         Returns:
-            True if reject was sent, False on error.
+            True if reject was queued, False on error.
         """
         with self._account_lock:
             call = self._calls.get(call_id)
             if not call:
                 return False
 
-            try:
-                call.hangup(pjsua2.CallOpParam(True))
-                return True
-            except Exception:
-                return False
+        # Queue the reject command for execution on the PJSUA2 event thread.
+        # This avoids cross-thread access to the SWIG Call proxy object.
+        self._pending_commands.put(("reject", (call_id,), {}))
+        return True
 
     def _remove_call(self, call_id: int) -> None:
         """Remove call from active calls dict and clean up media."""
@@ -455,6 +456,7 @@ class SipEngine:
             if self._call_media_connected.pop(call_id, False):
                 self._cleanup_call_media(call_id)
             self._calls.pop(call_id, None)
+            self._calls_disconnecting.discard(call_id)
 
     def _cleanup_call_media(self, call_id: int) -> None:
         """Clean up audio media connections for a call."""
@@ -503,7 +505,13 @@ class SipEngine:
 
         while self._running and self._endpoint:
             try:
+                # Drain pending commands before handling events
+                self._process_pending_commands()
+                
                 self._endpoint.libHandleEvents(100)
+                
+                # Drain pending commands after handling events
+                self._process_pending_commands()
             except Exception:
                 if self._running:
                     # Small delay to prevent busy loop on error
@@ -516,6 +524,82 @@ class SipEngine:
                 pass
         except Exception:
             pass
+
+    def _process_pending_commands(self) -> None:
+        """Process all pending SIP commands on the event thread."""
+        while True:
+            try:
+                cmd, args, kwargs = self._pending_commands.get_nowait()
+            except queue.Empty:
+                break
+            
+            try:
+                if cmd == "hangup":
+                    self._execute_hangup(*args, **kwargs)
+                elif cmd == "reject":
+                    self._execute_reject(*args, **kwargs)
+                elif cmd == "answer":
+                    self._execute_answer(*args, **kwargs)
+                else:
+                    pass  # Unknown command - ignore
+            except Exception:
+                pass  # Ignore command execution errors
+
+    def _execute_answer(self, call_id: int) -> None:
+        """Execute incoming call answer on the event thread."""
+        with self._account_lock:
+            call = self._calls.get(call_id)
+            if not call:
+                return
+
+            try:
+                call.answer(pjsua2.CallOpParam(True))
+            except Exception:
+                pass
+
+    def _execute_reject(self, call_id: int) -> None:
+        """Execute incoming call rejection on the event thread."""
+        with self._account_lock:
+            call = self._calls.get(call_id)
+            if not call:
+                return
+
+            # Mark call as disconnecting BEFORE calling PJSUA2 hangup()
+            # to prevent race condition where callback fires before tracking set is updated
+            self._calls_disconnecting.add(call_id)
+            self._notify_call_state(call_id, CallState.DISCONNECTING, "Call rejected")
+
+            try:
+                # Use CallOpParam(True) with status code for rejection (e.g., 603 Decline)
+                call.hangup(pjsua2.CallOpParam(True))
+            except Exception:
+                pass
+
+    def _execute_hangup(self, call_id: int) -> None:
+        """Execute hangup on the event thread."""
+        with self._account_lock:
+            call = self._calls.get(call_id)
+            account = self._account
+            if not call or not account:
+                return
+
+            self._calls_disconnecting.add(call_id)
+
+        self._notify_call_state(call_id, CallState.DISCONNECTED, "Hangup completed")
+
+        try:
+            # Use a plain PJSUA2 Call wrapper for hangup.
+            # The working PJSUA2 reference implementation performs hangup
+            # through pjsua2.Call(account, call_id), not a Python Call subclass.
+            hangup_call = pjsua2.Call(account, call_id)
+            hangup_call.hangup(pjsua2.CallOpParam())
+        except Exception as e:
+            # If the call was already dead/disconnected in PJSUA2, 
+            # log it or ignore, but the UI and internal state are already cleaned up.
+            pass
+        finally:
+            self._remove_call(call_id)
+            self._calls_disconnecting.discard(call_id)
 
     def cleanup(self) -> None:
         """Clean up PJSUA2 resources."""
@@ -534,6 +618,7 @@ class SipEngine:
                     pass
                 self._account = None
             self._calls.clear()
+            self._calls_disconnecting.clear()
 
         if self._endpoint:
             try:
@@ -585,60 +670,15 @@ class _SipAccountCallback(pjsua2.Account):
 
     def onCallState(self, prm: pjsua2.OnCallStateParam) -> None:
         """Handle call state changes."""
-        call = pjsua2.Call(self, prm.callId)
-        info = call.getInfo()
-        
-        # Map PJSUA2 call state to our CallState enum
-        state_map = {
-            pjsua2.PJSIP_INV_STATE_NULL: CallState.IDLE,
-            pjsua2.PJSIP_INV_STATE_CALLING: CallState.CALLING,
-            pjsua2.PJSIP_INV_STATE_INCOMING: CallState.RINGING,
-            pjsua2.PJSIP_INV_STATE_EARLY: CallState.CONNECTING,
-            pjsua2.PJSIP_INV_STATE_CONNECTING: CallState.CONNECTING,
-            pjsua2.PJSIP_INV_STATE_CONFIRMED: CallState.CONNECTED,
-            pjsua2.PJSIP_INV_STATE_DISCONNECTED: CallState.DISCONNECTED,
-        }
-        
-        call_state = state_map.get(info.state, CallState.IDLE)
-        reason = f"{info.lastStatusCode} {info.lastReason}" if info.lastStatusCode else ""
-        
-        # Handle special states
-        if info.state == pjsua2.PJSIP_INV_STATE_DISCONNECTED:
-            if info.lastStatusCode >= 300:
-                call_state = CallState.FAILED
-            else:
-                call_state = CallState.DISCONNECTED
-        
-        self._engine._notify_call_state(prm.callId, call_state, reason)
-        
-        # Note: We do NOT clean up the call here. The call callback will handle cleanup
-        # when it receives the DISCONNECTED state for the same call.
-        # This avoids double cleanup and ensures the call object stays alive during callbacks.
+        # Call state is handled exclusively by _SipCallCallback.
+        # Do not create a temporary pjsua2.Call wrapper or notify the engine here.
+        pass
 
     def onCallMediaState(self, prm: pjsua2.OnCallMediaStateParam) -> None:
         """Handle call media state changes."""
-        call = pjsua2.Call(self, prm.callId)
-        info = call.getInfo()
-        
-        # Connect audio media when call is confirmed
-        if info.state == pjsua2.PJSIP_INV_STATE_CONFIRMED:
-            try:
-                call_media = call.getMedia(0)
-                if call_media:
-                    call_media = pjsua2.AudioMedia.typecastFromMedia(call_media)
-                    # Connect to sound device
-                    endpoint = self._engine._endpoint
-                    if endpoint:
-                        aud_dev_mgr = endpoint.audDevManager()
-                        # Connect microphone to call
-                        aud_dev_mgr.getCaptureDevMedia().startTransmit(call_media)
-                        # Connect call to speaker
-                        call_media.startTransmit(aud_dev_mgr.getPlaybackDevMedia())
-                        # Track that media is connected for this call
-                        self._engine._call_media_connected[prm.callId] = True
-            except Exception:
-                pass
-
+        # Media handling is owned by _SipCallCallback.
+        # Do not configure call media from the account callback.
+        pass
 
 class _SipCallCallback(pjsua2.Call):
     """PJSUA2 Call callback handler."""
@@ -655,7 +695,8 @@ class _SipCallCallback(pjsua2.Call):
     def onCallState(self, prm: pjsua2.OnCallStateParam) -> None:
         """Handle call state changes."""
         info = self.getInfo()
-        
+
+        print(f"SIP CALLBACK: call_id={self.getId()} state={info.stateText} status={info.lastStatusCode} reason={info.lastReason}", flush=True)
         # Map PJSUA2 call state to our CallState enum
         state_map = {
             pjsua2.PJSIP_INV_STATE_NULL: CallState.IDLE,
@@ -670,20 +711,31 @@ class _SipCallCallback(pjsua2.Call):
         call_state = state_map.get(info.state, CallState.IDLE)
         reason = f"{info.lastStatusCode} {info.lastReason}" if info.lastStatusCode else ""
         
-        # Handle special states
+        # Use self.getId() which returns the PJSUA-LIB call ID
+        call_id = self.getId()
+        
+        # Handle DISCONNECTED state - this is the authoritative termination signal
         if info.state == pjsua2.PJSIP_INV_STATE_DISCONNECTED:
             if info.lastStatusCode >= 300:
                 call_state = CallState.FAILED
             else:
                 call_state = CallState.DISCONNECTED
+            
+            # Remove from disconnecting set since call has actually terminated
+            self._engine._calls_disconnecting.discard(call_id)
+            
+            self._engine._notify_call_state(call_id, call_state, reason)
+            
+            # Clean up disconnected calls - this is the single place where call removal happens
+            if call_state in (CallState.DISCONNECTED, CallState.FAILED):
+                self._engine._remove_call(call_id)
+            return
         
-        # Use self.getId() which returns the PJSUA-LIB call ID
-        call_id = self.getId()
+        # If call is in disconnecting phase but not yet DISCONNECTED, report DISCONNECTING
+        if call_id in self._engine._calls_disconnecting:
+            call_state = CallState.DISCONNECTING
+        
         self._engine._notify_call_state(call_id, call_state, reason)
-        
-        # Clean up disconnected calls - this is the single place where call removal happens
-        if call_state in (CallState.DISCONNECTED, CallState.FAILED):
-            self._engine._remove_call(call_id)
 
     def onCallMediaState(self, prm: pjsua2.OnCallMediaStateParam) -> None:
         """Handle call media state changes."""
