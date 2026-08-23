@@ -43,6 +43,7 @@ def main() -> int:
         library_path
         + (":" + environment["LD_LIBRARY_PATH"] if environment.get("LD_LIBRARY_PATH") else "")
     )
+    environment["QT_QPA_PLATFORM"] = "xcb"
 
     # Add project root to Python path
     environment["PYTHONPATH"] = (

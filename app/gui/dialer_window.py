@@ -74,7 +74,7 @@ class DialerWindow(QMainWindow):
         self.setWindowTitle("SysSIP - SIP/VoIP Dialer")
         self.setWindowIcon(load_app_icon())
         apply_no_maximize_flags(self)
-        self.resize(1000, 650)
+        self.setFixedSize(1000, 650)
         self._service: SipApplicationService = get_service()
         self._data_store = get_data_store()
         self._sip_accounts_window: SipAccountsWindow | None = None
@@ -1626,7 +1626,7 @@ class CallHistoryDialog(QDialog):
         self._data_store = data_store
         self.setWindowTitle("Call History")
         self.setModal(True)
-        self.resize(600, 500)
+        self.setFixedSize(600, 500)
         apply_no_maximize_flags(self)
         self._setup_ui()
     
@@ -1780,7 +1780,7 @@ class ContactsDialog(QDialog):
         self._data_store = data_store
         self.setWindowTitle("Contacts")
         self.setModal(True)
-        self.resize(500, 600)
+        self.setFixedSize(500, 600)
         apply_no_maximize_flags(self)
         self._setup_ui()
     

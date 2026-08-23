@@ -285,7 +285,7 @@ class MainWindow(QMainWindow):
         self.setWindowTitle("SysSIP - SIP Accounts")
         self.setWindowIcon(load_app_icon())
         apply_no_maximize_flags(self)
-        self.resize(550, 650)
+        self.setFixedSize(550, 650)
         self._service: SipApplicationService = get_service()
         self._otp_dialog: OtpDialog | None = None
         self._provider_rows: dict[int, ProviderRowWidget] = {}

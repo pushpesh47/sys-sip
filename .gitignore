@@ -20,5 +20,8 @@ __pycache__/
 
 # Virtual environment
 .venv/
-
+#temp file if any
 tmp/
+
+#
+jfc-pjproject/

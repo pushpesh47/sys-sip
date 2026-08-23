@@ -54,32 +54,15 @@ def load_logo_pixmap(large: bool = True) -> QPixmap:
     return QPixmap()
 
 
-def get_window_flags_no_maximize() -> Qt.WindowType:
-    """Get window flags for top-level windows without maximize button.
+def get_window_flags_no_maximize(window: QMainWindow | QDialog) -> Qt.WindowType:
+    """Get existing window flags without maximize button."""
+    flags = window.windowFlags()
+    flags &= ~Qt.WindowType.WindowMaximizeButtonHint
+    flags |= Qt.WindowType.CustomizeWindowHint
+    return flags
     
-    Returns explicit flags preserving:
-    - Window (top-level window)
-    - WindowTitleHint (title bar)
-    - WindowSystemMenuHint (system menu)
-    - WindowMinimizeButtonHint (minimize button)
-    - WindowCloseButtonHint (close button)
-    
-    While explicitly EXCLUDING:
-    - WindowMaximizeButtonHint (maximize button)
-    """
-    return (
-        Qt.WindowType.Window
-        | Qt.WindowType.WindowTitleHint
-        | Qt.WindowType.WindowSystemMenuHint
-        | Qt.WindowType.WindowMinimizeButtonHint
-        | Qt.WindowType.WindowCloseButtonHint
-    )
 
 
 def apply_no_maximize_flags(window: QMainWindow | QDialog) -> None:
-    """Apply no-maximize window flags to a top-level window or dialog.
-    
-    This uses explicit flag construction to ensure the maximize button
-    is reliably removed on all platforms, particularly Linux.
-    """
-    window.setWindowFlags(get_window_flags_no_maximize())
+    """Apply no-maximize window flags to a top-level window or dialog."""
+    window.setWindowFlags(get_window_flags_no_maximize(window))

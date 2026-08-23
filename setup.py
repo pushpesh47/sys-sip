@@ -15,7 +15,7 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).resolve().parent
 VENV_DIR = PROJECT_ROOT / ".venv"
 JFC_DIR = PROJECT_ROOT / "jfc-pjproject"
-BUILD_STATE_FILE = PROJECT_ROOT / ".jio-fiber-sip-build.json"
+BUILD_STATE_FILE = PROJECT_ROOT / ".sys-sip-build.json"
 
 JFC_REPOSITORY = "https://github.com/JFC-Group/JFC-pjproject.git"
 JFC_BRANCH = "v2.15.1"
@@ -43,6 +43,11 @@ SYSTEM_PACKAGES = {
     "libvo-amrwbenc-dev": [],
     "patchelf": ["patchelf"],
     "qt6-base-dev": ["qmake6", "qt6-qmake"],
+    "libxcb-cursor0": [],
+    "libxcb-icccm4": [],
+    "libxcb-image0": [],
+    "libxcb-keysyms1": [],
+    "libxcb-render-util0": [],
 }
 
 
@@ -274,6 +279,17 @@ def native_build_needs_rebuild(
 def clean_native_build() -> None:
     print_step("Cleaning stale JFC native build")
 
+    build_files = [
+        JFC_DIR / "build.mak",
+        JFC_DIR / "config.status",
+        JFC_DIR / "config.log",
+        JFC_DIR / "config.cache",
+    ]
+
+    if not any(path.exists() for path in build_files):
+        print("No existing JFC build configuration found. Skipping clean.")
+        return
+
     run_command(["make", "distclean"], cwd=JFC_DIR)
 
 
@@ -307,7 +323,7 @@ def build_pjsua2_python(venv_python: Path) -> Path:
     binding_dir = get_pjsua2_build_directory()
 
     run_command(
-        [str(venv_python), "setup.py", "build"],
+        ["make", "PYTHON_EXE=" + str(venv_python)],
         cwd=binding_dir,
     )
 
@@ -478,6 +494,7 @@ def verify_pjsua2(venv_python: Path) -> None:
         library_path
         + (":" + environment["LD_LIBRARY_PATH"] if environment.get("LD_LIBRARY_PATH") else "")
     )
+    environment["QT_QPA_PLATFORM"] = "xcb"
 
     result = subprocess.run(
         [
@@ -500,26 +517,40 @@ def verify_pjsua2(venv_python: Path) -> None:
 
     print(f"PJSUA2 version: {version}")
 
+def install_desktop_entry() -> None:
+    print_step("Installing SysSIP application menu entry")
 
-def run_application(venv_python: Path) -> None:
-    """Run the JioSip desktop application."""
-    print_step("Starting JioSip application")
+    applications_directory = Path.home() / ".local" / "share" / "applications"
+    desktop_entry = applications_directory / "SysSIP.desktop"
 
-    library_path = build_runtime_library_path()
+    applications_directory.mkdir(parents=True, exist_ok=True)
 
-    environment = os.environ.copy()
-    environment["LD_LIBRARY_PATH"] = (
-        library_path
-        + (":" + environment["LD_LIBRARY_PATH"] if environment.get("LD_LIBRARY_PATH") else "")
-    )
+    python_path = VENV_DIR / "bin" / "python"
+    run_path = PROJECT_ROOT / "run.py"
+    icon_path = PROJECT_ROOT / "app" / "assets" / "logo" / "sys-sip-small.png"
 
-    # Run the application module
-    subprocess.run(
-        [str(venv_python), "-m", "app"],
-        env=environment,
-        cwd=PROJECT_ROOT,
-    )
+    desktop_content = f"""[Desktop Entry]
+Version=1.0
+Type=Application
+Name=SysSIP
+GenericName=SIP/VoIP Dialer
+Comment=A generic SIP/VoIP calling application with Jio Fiber as the default provider
+Exec={python_path} {run_path}
+Icon={icon_path}
+Terminal=false
+Categories=Network;Telephony;
+StartupWMClass=SysSIP
+StartupNotify=true
+"""
 
+    desktop_entry.write_text(desktop_content, encoding="utf-8")
+    desktop_entry.chmod(0o755)
+    if shutil.which("update-desktop-database"):
+        run_command([
+            "update-desktop-database",
+            str(applications_directory),
+        ])
+    print(f"Installed application menu entry: {desktop_entry}")
 
 def main() -> None:
     require_linux()
@@ -531,7 +562,7 @@ def main() -> None:
 
     ensure_python_packages(venv_python)
     ensure_system_dependencies()
-    # ensure_jfc_source()
+    ensure_jfc_source()
 
     current_state = get_build_state(venv_python)
     previous_state = load_build_state()
@@ -552,17 +583,15 @@ def main() -> None:
     configure_jfc_runtime()
     configure_pjsua2_runtime(venv_python)
     verify_pjsua2(venv_python)
+    install_desktop_entry()
 
     print("\nSetup completed successfully.")
     print(f"Python environment: {VENV_DIR}")
     print(f"JFC PJSIP: {JFC_BRANCH}")
     print("PJSUA2 is ready.")
 
-    # Ask if user wants to run the application
-    answer = input("\nRun JioSip application now? [Y/n]: ").strip().lower()
-    if answer in ("", "y", "yes"):
-        run_application(venv_python)
-
+    
+   
 
 if __name__ == "__main__":
     main()
