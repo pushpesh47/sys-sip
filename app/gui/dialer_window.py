@@ -1613,34 +1613,45 @@ class CallHistoryDialog(QDialog):
         """Refresh the call history list."""
         self.history_list.clear()
         records = self._data_store.get_call_history()
-        
+
         for record in records:
             item = QListWidgetItem()
             contact = self._data_store.find_contact_by_number(record.number)
             display_name = contact.name if contact else record.number
-            
-            direction_icon = "📤" if record.direction == CallDirection.OUTGOING else "📥"
+
+            if record.direction == CallDirection.OUTGOING:
+                direction_icon = "↗️"
+            else:
+                direction_icon = "↙️"
+
             status_text = record.status.value.capitalize()
-            
+
             if record.status == CallStatus.ANSWERED:
                 status_color = "#4caf50"
             elif record.status == CallStatus.MISSED:
+                direction_icon = "↩️"
                 status_color = "#ff9800"
             elif record.status in (CallStatus.REJECTED, CallStatus.FAILED):
+                direction_icon = "🚫"
                 status_color = "#f44336"
             else:
                 status_color = "#9e9e9e"
-            
+
             time_str = record.started_at.strftime("%H:%M:%S")
             date_str = record.started_at.strftime("%b %d, %Y")
+
             if record.started_at.date() == datetime.now().date():
                 date_str = "Today"
             elif record.started_at.date() == (datetime.now().date() - __import__('datetime').timedelta(days=1)):
                 date_str = "Yesterday"
-            
+
             duration_str = f" · Duration: {record.formatted_duration}" if record.is_answered else ""
-            
-            item.setText(f"{direction_icon} {display_name}\n   {record.number} · {date_str} {time_str} · {status_text}{duration_str} · Via: {record.sip_account}")
+
+            item.setText(
+                f"{direction_icon} {display_name}\n"
+                f"   {record.number} · {date_str} {time_str} · "
+                f"{status_text}{duration_str} · Via: {record.sip_account}"
+            )
             item.setData(Qt.ItemDataRole.UserRole, record.id)
             self.history_list.addItem(item)
     
