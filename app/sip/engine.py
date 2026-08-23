@@ -154,14 +154,26 @@ class SipEngine:
             # Configure codecs - disable unwanted, prioritize AMR/AMR-WB
             self._configure_codecs()
 
-            # Create TLS transport
-            self._set_state(RegistrationState.CONNECTING, "Creating TLS transport")
+            # Create transport based on configuration
+            self._set_state(RegistrationState.CONNECTING, f"Creating {self.config.transport} transport")
             transport_config = pjsua2.TransportConfig()
             transport_config.port = self.config.local_port
-            transport_config.tlsConfig.verifyServer = False
+
+            # Map transport string to PJSUA2 transport type
+            transport_type_map = {
+                "UDP": pjsua2.PJSIP_TRANSPORT_UDP,
+                "TCP": pjsua2.PJSIP_TRANSPORT_TCP,
+                "TLS": pjsua2.PJSIP_TRANSPORT_TLS,
+            }
+            
+            transport_type = transport_type_map.get(self.config.transport.upper(), pjsua2.PJSIP_TRANSPORT_UDP)
+            
+            # Configure TLS-specific settings only for TLS transport
+            if transport_type == pjsua2.PJSIP_TRANSPORT_TLS:
+                transport_config.tlsConfig.verifyServer = False
 
             self._transport_id = self._endpoint.transportCreate(
-                pjsua2.PJSIP_TRANSPORT_TLS,
+                transport_type,
                 transport_config
             )
 
@@ -265,22 +277,30 @@ class SipEngine:
             account_config = pjsua2.AccountConfig()
             account_config.natConfig.sipOutboundUse = False
 
-            # Public identity
-            sip_number = f"+{self.config.username}" if not self.config.username.startswith("+") else self.config.username
-            account_config.idUri = f"sip:{sip_number}@{self.config.domain}"
+            if self.config.name == "Jio Fiber":
+                sip_number = f"+{self.config.username}" if not self.config.username.startswith("+") else self.config.username
+                account_config.idUri = f"sip:{sip_number}@{self.config.domain}"
+            else:
+                # Public identity - use configured username as-is, don't prepend + for non-phone usernames
+                account_config.idUri = f"sip:{self.config.username}@{self.config.domain}"
 
-            # Registrar and proxy
+            # Registrar
             account_config.regConfig.registrarUri = f"sip:{self.config.registrar_host}:{self.config.registrar_port}"
-            account_config.sipConfig.proxies.append(
-                f"sip:{self.config.proxy_host}:{self.config.proxy_port};transport=tls"
-            )
 
-            # Registration headers
-            account_config.regConfig.headers = pjsua2.SipHeaderVector()
-            header = pjsua2.SipHeader()
-            header.hName = "P-Access-Network-Info"
-            header.hValue = self.config.p_access_network_info
-            account_config.regConfig.headers.append(header)
+            # Proxy - only add if configured
+            if self.config.proxy_host:
+                # Build proxy URI with configured transport
+                transport_param = self.config.transport.lower()
+                proxy_uri = f"sip:{self.config.proxy_host}:{self.config.proxy_port};transport={transport_param}"
+                account_config.sipConfig.proxies.append(proxy_uri)
+
+            # Registration headers (only for Jio Fiber which needs P-Access-Network-Info)
+            if self.config.p_access_network_info:
+                account_config.regConfig.headers = pjsua2.SipHeaderVector()
+                header = pjsua2.SipHeader()
+                header.hName = "P-Access-Network-Info"
+                header.hValue = self.config.p_access_network_info
+                account_config.regConfig.headers.append(header)
 
             # Contact parameters for REGISTER
             contact_parts = [
@@ -297,11 +317,11 @@ class SipEngine:
             # Transport
             account_config.sipConfig.transportId = self._transport_id
 
-            # Authentication credentials
+            # Authentication credentials - use username as-is, not username@domain
             cred = pjsua2.AuthCredInfo()
             cred.scheme = "Digest"
-            cred.realm = self.config.realm
-            cred.username = f"{self.config.username}@{self.config.domain}"
+            cred.realm = self.config.realm or self.config.domain
+            cred.username = self.config.username
             cred.data = self.config.password
             cred.dataType = 0
 
