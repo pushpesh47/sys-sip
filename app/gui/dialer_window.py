@@ -1180,6 +1180,19 @@ class DialerWindow(QMainWindow):
         """Handle SIP Accounts window closed."""
         self._sip_accounts_window = None
 
+    def _get_display_call_number(self, number: str) -> str:
+        """Get the phone number to display for the current SIP provider."""
+        provider = self._service.active_provider
+        if not provider or provider.get_config().name != "Jio Fiber":
+            return number
+
+        display_number = number.strip().strip("<>")
+        if display_number.startswith("sip:") or display_number.startswith("sips:"):
+            display_number = display_number.split(":", 1)[1]
+            display_number = display_number.split("@", 1)[0]
+
+        return display_number
+
     def _show_incoming_call_dialog(self, call_id: int, remote_uri: str) -> None:
         """Show incoming call dialog with contact resolution."""
         from PySide6.QtCore import Qt
@@ -1188,6 +1201,9 @@ class DialerWindow(QMainWindow):
         
         if self._incoming_call_dialog:
             self._incoming_call_dialog.close()
+
+        #show proper number
+        remote_uri = self._get_display_call_number(remote_uri)
         
         # Resolve contact name
         contact = self._data_store.find_contact_by_number(remote_uri)
