@@ -142,19 +142,43 @@ class DialerWindow(QMainWindow):
                 background-color: #ffffff;
                 border: 1px solid #e0e0e0;
                 border-radius: 4px;
-                padding: 4px 12px;
+                padding: 4px 30px 4px 12px;
                 font-size: 12px;
+                color: #1a1a2e;
+                min-width: 110px;
             }
             QComboBox:hover {
                 border-color: #2d7ff9;
             }
+            QComboBox:focus {
+                border-color: #2d7ff9;
+            }
             QComboBox::drop-down {
-                border: none;
+                subcontrol-origin: padding;
+                subcontrol-position: top right;
+                width: 24px;
+                border-left: 1px solid #e0e0e0;
             }
             QComboBox QAbstractItemView {
                 background-color: #ffffff;
-                border: 1px solid #e0e0e0;
-                selection-background-color: #e3f2fd;
+                color: #1a1a2e;
+                border: 1px solid #d0d0d0;
+                selection-background-color: #2d7ff9;
+                selection-color: #ffffff;
+                outline: none;
+                padding: 4px 0;
+            }
+            QComboBox QAbstractItemView::item {
+                min-height: 28px;
+                padding: 6px 10px;
+            }
+            QComboBox QAbstractItemView::item:hover {
+                background-color: #f5f5f5;
+                color: #1a1a2e;
+            }
+            QComboBox QAbstractItemView::item:selected {
+                background-color: #2d7ff9;
+                color: #ffffff;
             }
         """)
         self.account_selector.currentIndexChanged.connect(self._on_account_selected)
@@ -1588,10 +1612,12 @@ class CallHistoryDialog(QDialog):
                 border-bottom: 1px solid #f0f0f0;
             }
             QListWidget::item:selected {
-                background-color: #e3f2fd;
+                background-color: #2d7ff9;
+                color: #ffffff;
             }
             QListWidget::item:hover {
-                background-color: #f5f5f5;
+                background-color: #2d7ff9;
+                color: #ffffff;
             }
         """)
         self.history_list.itemDoubleClicked.connect(self._on_item_double_clicked)
@@ -1759,10 +1785,12 @@ class ContactsDialog(QDialog):
                 border-bottom: 1px solid #f0f0f0;
             }
             QListWidget::item:selected {
-                background-color: #e3f2fd;
+                background-color: #2d7ff9;
+                color: #ffffff;
             }
             QListWidget::item:hover {
-                background-color: #f5f5f5;
+                background-color: #2d7ff9;
+                color: #ffffff;
             }
         """)
         self.contacts_list.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
