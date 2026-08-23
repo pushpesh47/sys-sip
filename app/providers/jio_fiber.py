@@ -259,44 +259,6 @@ class JioFiberProvider(SipProvider):
                 gsma_rcs_telephony="none",
             )
 
-            # Write .env file
-            env_values = {
-                "CONTAINER_NAME": "jfc-pjsua",
-                "HOSTNAME_OVERRIDE": provisioner.HARD_HOSTNAME,
-                "DEVICE_MAC": mac,
-                "USER_AGENT": "ParikaProxy/1.0",
-                "IPV4_ADDRESS": local_ip,
-                "LOCAL_PORT": "5061",
-                "TLS_PORT": "5068",
-                "RTP_PORT": "52000",
-                "SIP_NUMBER": sip_number,
-                "SIP_PASSWORD": userpwd,
-                "SIP_REALM": realm,
-                "SIP_HOME_NETWORK_DOMAIN": config.domain,
-                "SIP_P_CSCF_ADDRESS": sip.get("address", ""),
-                "SIP_P_CSCF_ADDRESS_TYPE": sip.get("addresstype", ""),
-                "SIP_SIGNALING_TRANSPORT": "SIPoTLS",
-                "SIP_MEDIA_TRANSPORT": "RTP",
-                "SIP_INSTANCE": config.instance_id,
-                "SIP_REG_ID": config.reg_id,
-                "SIP_CONTACT_VIDEO": "true",
-                "SIP_Q_VALUE": config.q_value,
-                "P_ACCESS_NETWORK_INFO": config.p_access_network_info,
-                "SIP_ICSI_REF": config.icsi_ref,
-                "SIP_IARI_REF": config.iari_ref,
-                "SIP_GSMA_RCS_TELEPHONY": config.gsma_rcs_telephony,
-                "SIP_TOKEN": sip.get("token", ""),
-                "SIP_CONFIG_VERSION": sip.get("version", ""),
-                "SIP_PN_PARAM": sip.get("pnparam", ""),
-                "SIP_PSOLTID": sip.get("psoltid", ""),
-                "REGISTRAR_HOST": host,
-                "REGISTRAR_PORT": "5068",
-                "LOG_LEVEL": "5",
-                "KEEPALIVE": "15",
-            }
-
-            provisioner.write_env(str(find_project_root() / ".env"), env_values)
-
             return ProvisioningResult(
                 success=True,
                 config=config,
@@ -342,10 +304,6 @@ class JioFiberProvider(SipProvider):
             response = provisioner.remove_device(host, provisioner.HARD_HOSTNAME, mac)
 
             if response.status_code == 200:
-                # Remove local .env file
-                env_path = find_project_root() / ".env"
-                if env_path.exists():
-                    env_path.unlink()
                 return ProvisioningResult(success=True, config=None, state=ProvisioningState.SUCCESS)
             else:
                 return ProvisioningResult(

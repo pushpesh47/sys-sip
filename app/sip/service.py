@@ -245,6 +245,7 @@ class SipApplicationService:
             # Update provider config and settings
             provider.update_config(result.config)
             self._settings.providers[index] = result.config
+            self._settings._save_providers()
 
             # Reinitialize engine if this is the active provider
             if index == self._settings.active_provider_index:

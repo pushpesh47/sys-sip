@@ -1,6 +1,9 @@
 """Centralized configuration management."""
 
+import json
 import os
+import tempfile
+import threading
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Optional
@@ -106,9 +109,115 @@ class Settings:
     providers: list[SipProviderConfig] = field(default_factory=list)
     active_provider_index: int = -1
     config_dir: Path = field(default_factory=lambda: Path.home() / ".config" / "sys-sip")
+    _providers_file: Path = field(init=False, default=Path())
+    _lock: threading.RLock = field(init=False, default_factory=threading.RLock)
 
     def __post_init__(self):
         self.config_dir.mkdir(parents=True, exist_ok=True)
+        self._providers_file = self.config_dir / "sip-providers.json"
+        self._load_providers()
+
+    def _load_providers(self) -> None:
+        """Load providers from sip-providers.json."""
+        if not self._providers_file.exists():
+            return
+
+        try:
+            with open(self._providers_file, 'r') as f:
+                data = json.load(f)
+            
+            providers_data = data.get("providers", [])
+            active_index = data.get("active_provider_index", -1)
+            
+            self.providers = [SipProviderConfig.from_dict(p) for p in providers_data]
+            self.active_provider_index = active_index
+            
+            # Validate active provider index
+            if self.active_provider_index >= len(self.providers):
+                self.active_provider_index = len(self.providers) - 1
+            elif self.active_provider_index < -1:
+                self.active_provider_index = -1
+                
+        except json.JSONDecodeError as e:
+            # Log error but don't crash - start with empty providers
+            print(f"Warning: Failed to parse sip-providers.json: {e}")
+            self.providers = []
+            self.active_provider_index = -1
+        except Exception as e:
+            print(f"Warning: Failed to load sip-providers.json: {e}")
+            self.providers = []
+            self.active_provider_index = -1
+
+    def _save_providers(self) -> None:
+        """Save providers to sip-providers.json atomically with 0600 permissions."""
+        with self._lock:
+            try:
+                data = {
+                    "providers": [p.to_dict() for p in self.providers],
+                    "active_provider_index": self.active_provider_index,
+                }
+                
+                # Write to temporary file first
+                with tempfile.NamedTemporaryFile(
+                    mode='w',
+                    dir=self.config_dir,
+                    prefix='.sip-providers.json.tmp',
+                    delete=False
+                ) as tmp_file:
+                    json.dump(data, tmp_file, indent=2)
+                    tmp_path = Path(tmp_file.name)
+                
+                # Set permissions to 0600 (user read/write only)
+                try:
+                    tmp_path.chmod(0o600)
+                except Exception:
+                    pass  # Best effort on Windows
+                
+                # Atomic replace
+                tmp_path.replace(self._providers_file)
+                
+            except Exception as e:
+                # Don't silently fail - log the error
+                print(f"Error: Failed to save sip-providers.json: {e}")
+                raise
+
+    def _migrate_from_env(self) -> bool:
+        """One-time migration from .env to sip-providers.json for Jio Fiber.
+        
+        Returns:
+            True if migration was performed, False otherwise.
+        """
+        # Only migrate if we have no providers and .env exists
+        if self.providers:
+            return False
+            
+        project_root = find_project_root()
+        env_path = project_root / ".env"
+        if not env_path.exists():
+            return False
+            
+        try:
+            env_vars = load_env_file(env_path)
+            if not env_vars:
+                return False
+                
+            jio_config = SipProviderConfig.from_env(env_vars)
+            if not jio_config.username or not jio_config.password:
+                return False
+                
+            # Add Jio Fiber as the first provider
+            self.providers.append(jio_config)
+            self.active_provider_index = 0
+            
+            # Save to new location
+            self._save_providers()
+            
+            print("Migrated Jio Fiber configuration from .env to sip-providers.json")
+            return True
+            
+        except Exception as e:
+            print(f"Warning: Failed to migrate from .env: {e}")
+            return False
 
     @property
     def active_provider(self) -> Optional[SipProviderConfig]:
@@ -120,16 +229,19 @@ class Settings:
         self.providers.append(provider)
         if self.active_provider_index == -1:
             self.active_provider_index = 0
+        self._save_providers()
 
     def remove_provider(self, index: int) -> None:
         if 0 <= index < len(self.providers):
             self.providers.pop(index)
             if self.active_provider_index >= len(self.providers):
                 self.active_provider_index = len(self.providers) - 1
+            self._save_providers()
 
     def set_active_provider(self, index: int) -> None:
         if 0 <= index < len(self.providers):
             self.active_provider_index = index
+            self._save_providers()
 
 
 def find_project_root() -> Path:
@@ -158,13 +270,13 @@ def load_env_file(env_path: Optional[Path] = None) -> dict[str, str]:
 
 
 def load_settings() -> Settings:
-    """Load application settings from .env and config file."""
-    env_vars = load_env_file()
+    """Load application settings from sip-providers.json.
+    
+    Performs one-time migration from .env if needed.
+    """
     settings = Settings()
-
-    if env_vars:
-        jio_config = SipProviderConfig.from_env(env_vars)
-        if jio_config.username and jio_config.password:
-            settings.add_provider(jio_config)
-
+    
+    # Perform one-time migration from .env if needed
+    settings._migrate_from_env()
+    
     return settings
