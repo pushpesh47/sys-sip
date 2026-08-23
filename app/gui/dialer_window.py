@@ -91,7 +91,6 @@ class DialerWindow(QMainWindow):
         self._setup_menu()
         self._connect_signals()
         self._check_initial_state()
-        self._load_recent_calls()
 
     def _setup_ui(self) -> None:
         central = QWidget()
@@ -537,47 +536,6 @@ class DialerWindow(QMainWindow):
 
         layout.addWidget(self.active_call_frame)
 
-        # Recent calls quick access (initially hidden, shown when there are recent calls)
-        self.recent_calls_frame = QFrame()
-        self.recent_calls_frame.setStyleSheet("""
-            QFrame {
-                background-color: #ffffff;
-                border: 1px solid #e8e8e8;
-                border-radius: 8px;
-            }
-        """)
-        self.recent_calls_frame.setVisible(False)
-        recent_calls_layout = QVBoxLayout(self.recent_calls_frame)
-        recent_calls_layout.setSpacing(8)
-        recent_calls_layout.setContentsMargins(16, 12, 16, 12)
-        
-        recent_header = QHBoxLayout()
-        recent_title = QLabel("Recent Calls")
-        recent_title.setStyleSheet("font-size: 13px; font-weight: 600; color: #1a1a2e;")
-        recent_header.addWidget(recent_title)
-        recent_header.addStretch()
-        recent_calls_layout.addLayout(recent_header)
-        
-        self.recent_calls_list = QListWidget()
-        self.recent_calls_list.setMaximumHeight(120)
-        self.recent_calls_list.setStyleSheet("""
-            QListWidget {
-                background-color: transparent;
-                border: none;
-                font-size: 12px;
-            }
-            QListWidget::item {
-                padding: 8px;
-                border-radius: 4px;
-            }
-            QListWidget::item:hover {
-                background-color: #f5f5f5;
-            }
-        """)
-        self.recent_calls_list.itemDoubleClicked.connect(self._on_recent_call_double_clicked)
-        recent_calls_layout.addWidget(self.recent_calls_list)
-        
-        layout.addWidget(self.recent_calls_frame)
         layout.addStretch()
 
         return panel
@@ -1158,7 +1116,6 @@ class DialerWindow(QMainWindow):
             )
             self._data_store.add_call_record(record)
             self._current_call_record_id = record.id
-            self._load_recent_calls()
             self._notifications.info(f"Calling {number}...")
 
     def _on_hangup_clicked(self) -> None:
@@ -1225,7 +1182,6 @@ class DialerWindow(QMainWindow):
             )
             self._data_store.add_call_record(record)
             self._current_call_record_id = record.id
-            self._load_recent_calls()
         except Exception:
             # If persistence fails we still want the UI to appear
             self._current_call_record_id = None
@@ -1358,7 +1314,6 @@ class DialerWindow(QMainWindow):
                 record.status = CallStatus.REJECTED
                 record.ended_at = datetime.now()
                 self._data_store.update_call_record(record)
-                self._load_recent_calls()
 
     def _finalize_call_record(self, status: CallStatus) -> None:
         """Finalize call record when call ends with explicit status."""
@@ -1370,7 +1325,6 @@ class DialerWindow(QMainWindow):
                 if record.answered_at:
                     record.duration = int((record.ended_at - record.answered_at).total_seconds())
                 self._data_store.update_call_record(record)
-                self._load_recent_calls()
                 return
         # fallback to latest
         history = self._data_store.get_call_history(limit=1)
@@ -1382,7 +1336,6 @@ class DialerWindow(QMainWindow):
                 if record.answered_at:
                     record.duration = int((record.ended_at - record.answered_at).total_seconds())
                 self._data_store.update_call_record(record)
-                self._load_recent_calls()
 
     def _finalize_call_record_auto(self) -> None:
         """Finalize call record inferring status from answered_at and direction."""
@@ -1405,53 +1358,7 @@ class DialerWindow(QMainWindow):
             else:
                 record.status = CallStatus.CANCELLED
         self._data_store.update_call_record(record)
-        self._load_recent_calls()
 
-    def _load_recent_calls(self) -> None:
-        """Load recent calls into the quick access list."""
-        recent = self._data_store.get_recent_calls(limit=5)
-        self.recent_calls_list.clear()
-        
-        if recent:
-            self.recent_calls_frame.setVisible(True)
-            for record in recent:
-                item = QListWidgetItem()
-                contact = self._data_store.find_contact_by_number(record.number)
-                display_name = contact.name if contact else record.number
-                
-                direction_icon = "📤" if record.direction == CallDirection.OUTGOING else "📥"
-                status_icon = ""
-                if record.status == CallStatus.ANSWERED:
-                    status_icon = "✓"
-                elif record.status == CallStatus.MISSED:
-                    status_icon = "⚠"
-                elif record.status == CallStatus.REJECTED:
-                    status_icon = "✗"
-                elif record.status == CallStatus.FAILED:
-                    status_icon = "✗"
-                
-                time_str = record.started_at.strftime("%H:%M")
-                date_str = record.started_at.strftime("%b %d")
-                if record.started_at.date() == datetime.now().date():
-                    date_str = "Today"
-                elif record.started_at.date() == (datetime.now().date() - __import__('datetime').timedelta(days=1)):
-                    date_str = "Yesterday"
-                
-                duration_str = f" · {record.formatted_duration}" if record.is_answered else ""
-                
-                item.setText(f"{direction_icon} {display_name}\n   {record.direction.value.capitalize()} · {date_str} {time_str}{duration_str}")
-                item.setData(Qt.ItemDataRole.UserRole, record.id)
-                self.recent_calls_list.addItem(item)
-        else:
-            self.recent_calls_frame.setVisible(False)
-
-    def _on_recent_call_double_clicked(self, item: QListWidgetItem) -> None:
-        """Handle double-click on recent call - redial."""
-        record_id = item.data(Qt.ItemDataRole.UserRole)
-        record = self._data_store.find_call_record(record_id)
-        if record:
-            self.number_input.setText(record.number)
-            self._on_call_clicked()
 
     def _show_call_history(self) -> None:
         """Show call history dialog."""

@@ -15,6 +15,7 @@ class CallDirection(Enum):
 
 class CallStatus(Enum):
     """Call status."""
+    CALLING = "calling"
     ANSWERED = "answered"
     MISSED = "missed"
     REJECTED = "rejected"
