@@ -4,6 +4,7 @@ from app import APP_VERSION, APP_DESCRIPTION, APP_DEVELOPER, APP_DEVELOPER_NUMBE
 
 from PySide6.QtCore import Qt, QTimer, Signal, Slot, QTime
 from PySide6.QtWidgets import (
+    QApplication,
     QMainWindow,
     QWidget,
     QVBoxLayout,
@@ -27,6 +28,7 @@ from PySide6.QtWidgets import (
     QTextEdit,
     QScrollArea,
     QToolButton,
+    QSystemTrayIcon,
 )
 from PySide6.QtGui import QAction, QFont, QIcon, QPixmap, QPainter, QColor, QKeySequence
 from PySide6.QtMultimedia import QSoundEffect
@@ -89,6 +91,14 @@ class DialerWindow(QMainWindow):
         self._current_call_number = ""
         self._current_call_contact_name = ""
         self._notifications = get_notification_manager(self)
+
+        self._tray_icon = QSystemTrayIcon(self)
+        self._tray_icon.setIcon(load_app_icon())
+        self._tray_icon.setToolTip("SysSIP - SIP/VoIP Client")
+        self._tray_icon.show()
+        self._tray_icon.setContextMenu(self._create_tray_menu())
+
+        self._exiting = False
 
         self._ringtone = QSoundEffect(self)
         self._ringtone.setSource(QUrl.fromLocalFile(str(Path(__file__).resolve().parent.parent / "assets" / "sound" / "ringtone-iphone.wav")))
@@ -1545,8 +1555,37 @@ class DialerWindow(QMainWindow):
         
         dialog.exec()
 
-    def closeEvent(self, event) -> None:
-        """Handle window close event."""
+    def _create_tray_menu(self) -> QMenu:
+        """Create system tray menu."""
+        menu = QMenu(self)
+
+        show_hide_action = QAction("Show / Hide", self)
+        show_hide_action.triggered.connect(self._toggle_window)
+        menu.addAction(show_hide_action)
+
+        about_action = QAction("About", self)
+        about_action.triggered.connect(self._show_about)
+        menu.addAction(about_action)
+
+        menu.addSeparator()
+
+        exit_action = QAction("Exit", self)
+        exit_action.triggered.connect(self._exit_application)
+        menu.addAction(exit_action)
+
+        return menu
+
+    def _toggle_window(self) -> None:
+        """Toggle main window visibility."""
+        if self.isVisible():
+            self.hide()
+        else:
+            self.show()
+            self.raise_()
+            self.activateWindow()
+
+    def _exit_application(self) -> None:
+        """Exit the application and stop the SIP engine."""
         # Clean up any active call
         if self._current_call_id >= 0:
             self._service.engine.hangup_call(self._current_call_id)
@@ -1562,7 +1601,19 @@ class DialerWindow(QMainWindow):
         # Stop SIP engine
         self._service.stop()
         
-        super().closeEvent(event)
+        self._tray_icon.hide()
+        self._exiting = True
+        self.close()
+    
+    def closeEvent(self, event) -> None:
+        """Handle window close event."""
+        if self._exiting:
+            event.accept()
+            QApplication.quit()
+            return
+
+        self.hide()
+        event.ignore()
 
 
 class CallHistoryDialog(QDialog):
