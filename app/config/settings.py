@@ -105,7 +105,7 @@ class Settings:
 
     providers: list[SipProviderConfig] = field(default_factory=list)
     active_provider_index: int = -1
-    config_dir: Path = field(default_factory=lambda: Path.home() / ".config" / "jio-sip")
+    config_dir: Path = field(default_factory=lambda: Path.home() / ".config" / "sys-sip")
 
     def __post_init__(self):
         self.config_dir.mkdir(parents=True, exist_ok=True)

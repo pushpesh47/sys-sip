@@ -451,7 +451,7 @@ def main():
         "SIP_INSTANCE",
     ]:
         print(f"- {k}={env_values[k]}")
-    print(f"\nDone. You can now run the proxy with your .env: \n  docker run --rm --name jio-sip --env-file {env_path} --network host ankurpandeyvns/jiofiber-sip-proxy:latest")
+    print(f"\nDone. You can now run the proxy with your .env: \n  docker run --rm --name sys-sip --env-file {env_path} --network host ankurpandeyvns/jiofiber-sip-proxy:latest")
 
 
 if __name__ == "__main__":

@@ -1,5 +1,13 @@
 """GUI module exports."""
 
-from app.gui.main_window import MainWindow
+from app.gui.notifications import (
+    NotificationManager,
+    NotificationType,
+    get_notification_manager,
+)
 
-__all__ = ["MainWindow"]
+__all__ = [
+    "NotificationManager",
+    "NotificationType",
+    "get_notification_manager",
+]
