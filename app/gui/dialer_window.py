@@ -29,6 +29,7 @@ from PySide6.QtWidgets import (
     QToolButton,
 )
 from PySide6.QtGui import QAction, QFont, QIcon, QPixmap, QPainter, QColor, QKeySequence
+from PySide6.QtMultimedia import QSoundEffect
 
 from app.config.settings import SipProviderConfig
 from app.gui.main_window import MainWindow as SipAccountsWindow
@@ -39,6 +40,8 @@ from app.gui.qt_bridge import QtEventBridge
 from app.gui import get_notification_manager, NotificationType
 from app.data import get_data_store, CallRecord, Contact, CallDirection, CallStatus, PhoneSettings
 from datetime import datetime
+from pathlib import Path
+from PySide6.QtCore import QUrl
 
 
 class StatusIndicator(QWidget):
@@ -86,6 +89,11 @@ class DialerWindow(QMainWindow):
         self._current_call_number = ""
         self._current_call_contact_name = ""
         self._notifications = get_notification_manager(self)
+
+        self._ringtone = QSoundEffect(self)
+        self._ringtone.setSource(QUrl.fromLocalFile(str(Path(__file__).resolve().parent.parent / "assets" / "sound" / "ringtone-iphone.wav")))
+        self._ringtone.setLoopCount(-2)
+        self._ringtone.setVolume(1.0)
         
         self._setup_ui()
         self._setup_menu()
@@ -984,6 +992,7 @@ class DialerWindow(QMainWindow):
             self.number_input.setEnabled(False)
             self.active_call_frame.setVisible(True)
         elif state == CallState.DISCONNECTED:
+            self._ringtone.stop()
             self.call_button.setEnabled(True)
             self.hangup_button.setEnabled(False)
             self.number_input.setEnabled(True)
@@ -1019,6 +1028,7 @@ class DialerWindow(QMainWindow):
             if hasattr(self, '_incoming_call_dialog') and self._incoming_call_dialog:
                 self._incoming_call_dialog.close()
                 self._incoming_call_dialog = None
+                self._ringtone.stop()
             self.call_button.setEnabled(True)
             self.hangup_button.setEnabled(False)
             self.number_input.setEnabled(True)
@@ -1192,6 +1202,7 @@ class DialerWindow(QMainWindow):
         
         self._current_call_number = remote_uri
         self._current_call_contact_name = display_name
+        self._ringtone.play()
         
         # Create incoming call record (non‑blocking, best‑effort)
         try:
@@ -1297,6 +1308,7 @@ class DialerWindow(QMainWindow):
 
     def _answer_incoming_call(self, call_id: int) -> None:
         """Answer incoming call."""
+        self._ringtone.stop()
         if self._incoming_call_dialog:
             self._incoming_call_dialog.accept()
             self._incoming_call_dialog = None
@@ -1308,6 +1320,7 @@ class DialerWindow(QMainWindow):
 
     def _reject_incoming_call(self, call_id: int) -> None:
         """Reject incoming call."""
+        self._ringtone.stop()
         if self._incoming_call_dialog:
             # Disable buttons immediately to prevent double-reject
             self._incoming_call_dialog.setEnabled(False)
