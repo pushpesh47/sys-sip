@@ -25,3 +25,6 @@ tmp/
 
 #
 jfc-pjproject/
+
+#build files
+.sys-sip-build.json
