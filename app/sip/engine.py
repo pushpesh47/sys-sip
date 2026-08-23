@@ -435,25 +435,6 @@ class SipEngine:
         self._pending_commands.put(("answer", (call_id,), {}))
         return True
 
-    def reject_call(self, call_id: int) -> bool:
-        """
-        Reject an incoming call.
-
-        Args:
-            call_id: Call ID to reject.
-
-        Returns:
-            True if reject was queued, False on error.
-        """
-        with self._account_lock:
-            call = self._calls.get(call_id)
-            if not call:
-                return False
-
-        # Queue the reject command for execution on the PJSUA2 event thread.
-        # This avoids cross-thread access to the SWIG Call proxy object.
-        self._pending_commands.put(("reject", (call_id,), {}))
-        return True
 
     def _remove_call(self, call_id: int) -> None:
         """Remove call from active calls dict and clean up media."""
@@ -569,8 +550,6 @@ class SipEngine:
             try:
                 if cmd == "hangup":
                     self._execute_hangup(*args, **kwargs)
-                elif cmd == "reject":
-                    self._execute_reject(*args, **kwargs)
                 elif cmd == "answer":
                     self._execute_answer(*args, **kwargs)
                 elif cmd == "mute":
@@ -617,23 +596,6 @@ class SipEngine:
         except Exception:
             pass
 
-    def _execute_reject(self, call_id: int) -> None:
-        """Execute incoming call rejection on the event thread."""
-        with self._account_lock:
-            call = self._calls.get(call_id)
-            if not call:
-                return
-
-            # Mark call as disconnecting BEFORE calling PJSUA2 hangup()
-            # to prevent race condition where callback fires before tracking set is updated
-            self._calls_disconnecting.add(call_id)
-            self._notify_call_state(call_id, CallState.DISCONNECTING, "Call rejected")
-
-            try:
-                # Use CallOpParam(True) with status code for rejection (e.g., 603 Decline)
-                call.hangup(pjsua2.CallOpParam(True))
-            except Exception:
-                pass
 
     def _execute_hangup(self, call_id: int) -> None:
         """Execute hangup on the event thread."""

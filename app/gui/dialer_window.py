@@ -1313,14 +1313,14 @@ class DialerWindow(QMainWindow):
     def _reject_incoming_call(self, call_id: int) -> None:
         """Reject incoming call."""
         if self._incoming_call_dialog:
+            # Disable buttons immediately to prevent double-reject
+            self._incoming_call_dialog.setEnabled(False)
             self._incoming_call_dialog.reject()
             self._incoming_call_dialog = None
         
         # Update call record to rejected
-        self._update_call_record_on_reject()
-        
-        self._service.engine.reject_call(call_id)
-        self._notifications.warning("Call rejected")
+        self._update_call_record_on_reject()        
+        self._service.engine.hangup_call(call_id)
 
     def _update_call_record_on_answer(self) -> None:
         """Update call record when call is answered."""
@@ -1374,6 +1374,9 @@ class DialerWindow(QMainWindow):
             return
         record = self._data_store.find_call_record(self._current_call_record_id)
         if not record:
+            return
+        # Don't override explicit terminal statuses (e.g., REJECTED from user action)
+        if record.status in (CallStatus.REJECTED, CallStatus.ANSWERED, CallStatus.FAILED, CallStatus.CANCELLED):
             return
         record.ended_at = datetime.now()
         if record.answered_at:
