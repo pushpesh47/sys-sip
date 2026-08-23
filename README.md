@@ -178,6 +178,7 @@ python3 setup.py
 
 The installer is **idempotent** — re-running it only rebuilds when the JFC revision, Python version, SWIG version, or ALSA headers change.
 
+If you face any error during installation then delete the jfc-pjproject and .venv folder and re run the setup, required files and repos will be automatically downloaded and installed.
 ---
 
 ## Starting SysSIP

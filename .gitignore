@@ -23,8 +23,6 @@ __pycache__/
 #temp file if any
 tmp/
 
-#
-jfc-pjproject/
 
 #build files
 .sys-sip-build.json
